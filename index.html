@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MySword AI - Assistente Teológico</title>
+<style>
+/* RESET & VARIAVEIS */
+*{margin:0;padding:0;box-sizing:border-box}:root{--fonte-base:16px;--bg-dark:#0d1117;--bg-light:#ffffff;--text-dark:#e6edf3;--text-light:#1f2328;--primary:#1f6feb;--secondary:#238636;--accent:#f0883e;--gemini:#4285F4;--mistral:#6c47ff;--deepseek:#1a5fff;--groq:#f55325}body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg-dark);color:var(--text-dark);padding:20px;min-height:100vh;transition:all .3s ease;font-size:var(--fonte-base)}body.light-mode{background:var(--bg-light);color:var(--text-light)}.verse{cursor:pointer;padding:3px 6px;margin:2px;border-radius:4px;background:#161b22;transition:all .2s;border:1px solid transparent}.verse:hover{background:#1c3f8a;border-color:var(--primary)}.verse.selected{background:#0a5c4a;border-color:#238636}.copy-btn{background:#21262d;border:1px solid #30363d;color:var(--text-dark);padding:8px 16px;border-radius:6px;cursor:pointer;margin-top:10px;font-size:14px;transition:all .2s;display:inline-flex;align-items:center;gap:8px}.copy-btn:hover{background:#30363d}.loading{display:inline-flex;gap:5px;padding:15px}.loading span{width:8px;height:8px;background:var(--accent);border-radius:50%;animation:bounce 1.4s infinite ease-in-out}.loading span:nth-child(1){animation-delay:-.32s}.loading span:nth-child(2){animation-delay:-.16s}@keyframes bounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
+
+/* MODAL */
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:9999;align-items:center;justify-content:center}.modal-content{background:#161b22;padding:25px;border-radius:12px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,.5);border:2px solid var(--accent)}.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.modal-header h3{color:var(--accent);margin:0}.close-btn{background:none;border:none;color:#8b949e;font-size:24px;cursor:pointer;padding:0;width:30px;height:30px;display:flex;align-items:center;justify-content:center}.close-btn:hover{color:var(--text-dark)}.modal-buttons{display:flex;gap:10px;margin-top:20px}.modal-btn{flex:1;padding:12px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;font-size:14px;transition:all .2s}.btn-primary{background:var(--primary);color:white}.btn-primary:hover{background:#1a7ff0}.btn-gemini{background:var(--gemini);color:white}.btn-gemini:hover{background:#3367d6}.btn-mistral{background:var(--mistral);color:white}.btn-mistral:hover{background:#5a3bd6}.btn-deepseek{background:var(--deepseek);color:white}.btn-deepseek:hover{background:#0d4dcc}.btn-groq{background:var(--groq);color:white}.btn-groq:hover{background:#d9421e}.btn-secondary{background:#21262d;color:var(--text-dark);border:1px solid #30363d}.btn-secondary:hover{background:#30363d}.modal-input,.modal-textarea{width:100%;padding:12px;margin:10px 0;border-radius:6px;border:2px solid #30363d;background:#0d1117;color:var(--text-dark);font-size:14px;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}.modal-textarea{min-height:200px;resize:vertical}.modal-input:focus,.modal-textarea:focus{outline:none;border-color:var(--accent)}.modal-text{color:#8b949e;margin-bottom:15px;line-height:1.5;font-size:14px}.modal-text a{color:#1f6feb;text-decoration:none}.modal-text a:hover{text-decoration:underline}.modal-label{color:var(--accent);font-weight:bold;margin-top:15px;margin-bottom:5px;display:block;font-size:14px}.profile-example{background:#21262d;padding:12px;border-radius:6px;margin:10px 0;border-left:3px solid var(--accent);font-size:13px}.profile-example strong{color:var(--accent)}.api-selector{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0}.api-option{padding:15px;border-radius:10px;cursor:pointer;border:2px solid #30363d;background:#21262d;transition:all .3s;text-align:center}.api-option:hover{transform:translateY(-3px);box-shadow:0 5px 15px rgba(0,0,0,.3);border-color:var(--primary)}.api-option.selected{border-color:var(--accent);background:#2d333b;transform:translateY(-3px)}.api-option.gemini{border-left:4px solid var(--gemini)}.api-option.mistral{border-left:4px solid var(--mistral)}.api-option.deepseek{border-left:4px solid var(--deepseek)}.api-option.groq{border-left:4px solid var(--groq)}.api-option h4{margin:0 0 5px 0;font-size:16px;color:var(--text-dark)}.api-option .model-name{font-size:12px;color:#8b949e;display:block;margin-top:3px}.api-option .free-badge{background:var(--accent);color:#000;padding:2px 6px;border-radius:10px;font-size:10px;display:inline-block;margin-top:5px;font-weight:bold}.key-grid{display:grid;grid-template-columns:1fr auto;gap:10px;margin:15px 0}.key-input{grid-column:1}.key-btn{grid-column:2;background:var(--primary);border:none;color:white;padding:10px 15px;border-radius:6px;cursor:pointer;transition:all .2s;font-weight:bold}.key-btn:hover{background:#1a7ff0}.key-item{background:#21262d;padding:12px;border-radius:8px;margin:8px 0;display:flex;justify-content:space-between;align-items:center;border:1px solid #30363d}.key-item .key-preview{font-family:monospace;font-size:14px;letter-spacing:1px;color:var(--text-dark)}.key-item .key-status{font-size:12px;padding:3px 8px;border-radius:10px;font-weight:bold}.status-valid{background:#238636;color:white}.status-invalid{background:#da3633;color:white}
+
+/* JANELA FLUTUANTE */
+#mysword-float-btn{position:fixed;bottom:25px;right:25px;width:60px;height:60px;background:linear-gradient(135deg,#1e6fbb,#0d4d9c);color:white;border-radius:50%;border:3px solid var(--accent);box-shadow:0 6px 20px rgba(0,0,0,.4);cursor:pointer;z-index:9998;display:flex;align-items:center;justify-content:center;font-size:28px;transition:all .3s cubic-bezier(.175,.885,.32,1.275)}#mysword-float-btn:hover{transform:scale(1.1);box-shadow:0 8px 25px rgba(0,0,0,.6)}#mysword-float-window{position:fixed;bottom:100px;right:25px;width:400px;max-width:90vw;max-height:70vh;background:#0d1117;border-radius:16px;border:2px solid var(--accent);box-shadow:0 15px 50px rgba(0,0,0,.7);z-index:9999;display:none;flex-direction:column;overflow:hidden;animation:floatWindowAppear .4s ease-out}@keyframes floatWindowAppear{from{opacity:0;transform:translateY(20px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}.float-window-header{background:linear-gradient(135deg,#1e6fbb 0%,#0d4d9c 100%);padding:12px 15px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--accent)}.float-window-header .logo-text{font-size:18px;margin:0;font-weight:bold;color:white}.float-window-header .logo-text span{color:var(--accent)}.float-window-content{flex:1;display:flex;flex-direction:column;overflow:hidden;height: 100%;}.float-controls{padding:8px 12px;margin:0;display:flex;gap:8px;background:#161b22;border-bottom:1px solid #30363d}.float-btn{background:#21262d;border:1px solid #30363d;color:var(--text-dark);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .2s}.float-btn:hover{background:var(--primary);border-color:var(--primary);color:white;transform:scale(1.05)}.float-input-area{display:flex;gap:10px;margin:0 12px 8px 12px;padding-top:8px}.float-input-wrapper{flex:1;background:#0d1117;border-radius:25px;padding:0 15px;display:flex;align-items:center;box-shadow:0 2px 10px rgba(0,0,0,.1);position:relative;border:1px solid #30363d}#float-user-input{flex:1;border:none;padding:12px 5px;font-size:16px;background:transparent;outline:none;color:var(--text-dark);width:100%}#float-send-btn{background:var(--accent);color:#333;border:none;width:48px;height:48px;border-radius:50%;cursor:pointer;font-size:18px;font-weight:bold;transition:all .2s;display:flex;align-items:center;justify-content:center}#float-send-btn:hover{background:#f0b232;transform:scale(1.05)}.float-quick-actions{padding:0 12px 8px 12px;display:flex;gap:6px;overflow-x:auto;overflow-y:hidden;background:#161b22;white-space:nowrap;scrollbar-width:thin;scrollbar-color:var(--accent) #30363d;max-height:70px}.float-quick-actions::-webkit-scrollbar{height:6px}.float-quick-actions::-webkit-scrollbar-track{background:#30363d;border-radius:3px}.float-quick-actions::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}.float-quick-actions::-webkit-scrollbar-thumb:hover{background:#f0b232}.float-quick-btn{background:#21262d;border:1px solid #30363d;color:var(--text-dark);padding:8px 12px;border-radius:8px;font-size:11px;cursor:pointer;transition:all .2s;text-align:center;font-weight:500;position:relative;display:inline-flex;flex-direction:column;align-items:center;gap:2px;min-height:50px;justify-content:center;min-width:80px;flex-shrink:0}.float-quick-btn .btn-emoji{font-size:16px}.float-quick-btn .btn-text{font-size:10px;line-height:1.2}.float-quick-btn:hover{background:#30363d;transform:translateY(-2px)}.float-quick-btn.selected{background:var(--primary);border:1px solid var(--primary);color:white;box-shadow:0 0 10px rgba(31,111,235,.5)}.float-quick-btn.selected::after{content:'✓';position:absolute;top:2px;right:4px;font-size:10px;color:white}.prompt-indicator{position:absolute;top:-25px;left:10px;background:var(--primary);color:white;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:bold;opacity:0;transform:translateY(10px);transition:all .3s ease}.prompt-indicator.active{opacity:1;transform:translateY(0)}
+
+/* CORREÇÃO DO CHAT CONTAINER PARA CELULAR */
+#float-chat-container{
+    flex: 1; /* Ocupa todo o espaço restante */
+    overflow-y: auto; /* Permite rolagem */
+    padding: 10px;
+    background: #0d1117;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) #30363d;
+    min-height: 150px; /* Altura mínima garantida */
+    display: flex;
+    flex-direction: column;
+}
+
+#float-chat-container::-webkit-scrollbar{width:8px}#float-chat-container::-webkit-scrollbar-track{background:#30363d;border-radius:4px}#float-chat-container::-webkit-scrollbar-thumb{background:var(--accent);border-radius:4px}#float-chat-container::-webkit-scrollbar-thumb:hover{background:#f0b232}.float-message{margin-bottom:10px;padding:10px;border-radius:10px;font-size:14px;line-height:1.4;max-width:85%;word-wrap:break-word;animation:fadeIn .3s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.float-user-message{background:linear-gradient(135deg,#1e6fbb 0%,#0d4d9c 100%);color:white;margin-left:auto;border-bottom-right-radius:4px;border-bottom-left-radius:10px}.float-ai-message{background:#161b22;border:1px solid #30363d;color:var(--text-dark);border-bottom-left-radius:4px;border-bottom-right-radius:10px;overflow:hidden}.float-ai-message .message-header{font-weight:bold;margin-bottom:5px;color:var(--accent);display:flex;align-items:center;gap:5px;font-size:12px}.float-ai-message .message-content{max-height:none; /* Permite que cresça */ overflow-y:visible;padding-right:0;}.ai-badge{font-size:10px;padding:2px 6px;border-radius:8px;margin-left:5px;font-weight:bold}.gemini-badge{background:#1c3f8a;color:#4285F4;border:1px solid #2a4a9c}.mistral-badge{background:#3a2a6c;color:#6c47ff;border:1px solid #4a3a7c}.deepseek-badge{background:#1a3a7a;color:#1a5fff;border:1px solid #2a4a8a}.groq-badge{background:#9a2c1a;color:#f55325;border:1px solid #aa3c2a}.window-controls{display:flex;gap:5px}.window-control-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white;width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;transition:all .2s}.window-control-btn:hover{background:rgba(255,255,255,.25)}#mysword-float-window.minimized{height:auto!important;max-height:60px!important}#mysword-float-window.minimized .float-window-content{display:none}#mysword-float-window.maximized{width:90vw!important;height:90vh!important;max-width:90vw!important;max-height:90vh!important;bottom:5vh!important;right:5vw!important}#mysword-float-window.fullscreen{width:100vw!important;height:100vh!important;max-width:100vw!important;max-height:100vh!important;bottom:0!important;right:0!important;border-radius:0!important;border:none!important}#model-selector{display:flex;justify-content:center;gap:5px;margin:8px 12px;padding:8px;background:#161b22;border-radius:10px;border:1px solid #30363d}.model-btn{flex:1;padding:6px;font-size:12px;border:none;border-radius:6px;background:#21262d;color:var(--text-dark);cursor:pointer;transition:all .2s;font-weight:500}.model-btn:hover{background:#30363d}.model-btn.active{background:var(--accent);color:#000;font-weight:bold}
+
+/* MEDIA QUERIES - CELULAR ESPECÍFICO */
+@media (max-width:768px){#mysword-float-window{width:350px;right:15px;bottom:90px}#mysword-float-btn{bottom:20px;right:20px;width:55px;height:55px;font-size:24px}}
+
+/* FIX CRÍTICO PARA CELULARES E TECLADO */
+@media (max-width:480px){
+    #mysword-float-window{
+        width:96vw;
+        right:2vw;
+        left:2vw;
+        bottom:10px; /* Mais próximo do fundo */
+        height: 65vh; /* Altura fixa para garantir espaço */
+        max-height: 70vh;
+        display: flex;
+        flex-direction: column;
+    }
+    .float-window-content {
+        flex: 1;
+        overflow: hidden;
+    }
+    #float-chat-container {
+        flex: 1;
+        min-height: 0; /* Permite encolher se necessário */
+    }
+    #mysword-float-btn{bottom:15px;right:15px;width:50px;height:50px}
+    .float-quick-actions{gap:4px;padding:0 8px 8px 8px}
+    .float-quick-btn{padding:6px 8px;min-width:70px;min-height:45px}
+    .float-quick-btn .btn-emoji{font-size:14px}
+    .float-quick-btn .btn-text{font-size:9px}
+    #model-selector{flex-wrap:wrap}
+    .model-btn{flex:initial;width:48%}
+}
+
+/* Light Mode Styles */
+body.light-mode .verse{background:#f6f8fa}
+body.light-mode .verse:hover{background:#dde7ff}
+body.light-mode .verse.selected{background:#dcffe4}
+body.light-mode .copy-btn{background:#f6f8fa;border-color:#d0d7de;color:#1f2328}
+body.light-mode .copy-btn:hover{background:#eaeef2}
+body.light-mode .modal-content{background:#ffffff}
+body.light-mode .btn-secondary{background:#f6f8fa;color:#1f2328;border-color:#d0d7de}
+body.light-mode .btn-secondary:hover{background:#eaeef2}
+body.light-mode .modal-input,.light-mode .modal-textarea{background:#ffffff;border-color:#d0d7de;color:#1f2328}
+body.light-mode .modal-text{color:#656d76}
+body.light-mode .profile-example{background:#f6f8fa}
+body.light-mode .api-option{background:#f6f8fa;border-color:#d0d7de}
+body.light-mode .api-option h4{color:#1f2328}
+body.light-mode .api-option .model-name{color:#656d76}
+body.light-mode .api-option:hover{border-color:#1f6feb}
+body.light-mode .api-option.selected{background:#eaeef2}
+body.light-mode .key-item{background:#f6f8fa;border-color:#d0d7de}
+body.light-mode .key-item .key-preview{color:#1f2328}
+body.light-mode .gemini-badge{background:#e8f0fe;color:#1a73e8;border-color:#d2e3fc}
+body.light-mode .mistral-badge{background:#f0e7ff;color:#6c47ff;border-color:#e0d7ff}
+body.light-mode .deepseek-badge{background:#e6f0ff;color:#1a5fff;border-color:#d6e0ff}
+body.light-mode .groq-badge{background:#fee2e2;color:#dc2626;border-color:#fecaca}
+body.light-mode #mysword-float-window{background:#ffffff}
+body.light-mode .float-controls{background:#f6f8fa;border-color:#d0d7de}
+body.light-mode .float-btn{background:#ffffff;border-color:#d0d7de;color:#656d76}
+body.light-mode .float-btn:hover{background:#1f6feb;border-color:#1f6feb;color:white}
+body.light-mode .float-input-wrapper{background:#ffffff;border-color:#d0d7de}
+body.light-mode #float-user-input{color:#1f2328}
+body.light-mode .float-quick-actions{background:#f6f8fa}
+body.light-mode .float-quick-btn{background:#ffffff;border-color:#d0d7de;color:#656d76}
+body.light-mode .float-quick-btn:hover{background:#eaeef2}
+body.light-mode .float-quick-btn.selected{background:#1f6feb;border-color:#1f6feb;color:white}
+body.light-mode #float-chat-container{background:#ffffff}
+body.light-mode .float-ai-message{background:#f6f8fa;border-color:#d0d7de;color:#1f2328}
+body.light-mode .model-btn{background:#ffffff;color:#656d76}
+body.light-mode .model-btn:hover{background:#eaeef2}
+body.light-mode #model-selector{background:#f6f8fa;border-color:#d0d7de}
+body.light-mode .window-control-btn{background:rgba(0,0,0,.1);border-color:rgba(0,0,0,.2);color:#1f2328}
+body.light-mode .window-control-btn:hover{background:rgba(0,0,0,.2)}
+body.light-mode .float-quick-actions::-webkit-scrollbar-track{background:#d0d7de}
+body.light-mode .float-quick-actions::-webkit-scrollbar-thumb{background:#1f6feb}
+body.light-mode .float-quick-actions::-webkit-scrollbar-thumb:hover{background:#1a7ff0}
+body.light-mode #float-chat-container::-webkit-scrollbar-track{background:#d0d7de}
+body.light-mode #float-chat-container::-webkit-scrollbar-thumb{background:#1f6feb}
+body.light-mode #float-chat-container::-webkit-scrollbar-thumb:hover{background:#1a7ff0}
+body.light-mode .float-ai-message .message-content::-webkit-scrollbar-track{background:#d0d7de}
+body.light-mode .float-ai-message .message-content::-webkit-scrollbar-thumb{background:#1f6feb}
+body.light-mode .float-ai-message .message-content::-webkit-scrollbar-thumb:hover{background:#1a7ff0}
+</style>
+</head>
+
+<body>
+
+<div id="api-modal" class="modal">
+<div class="modal-content">
+<div class="modal-header">
+<h3>🔑 Gerenciar Chaves de IA</h3>
+<button class="close-btn" onclick="hideApiModal()">×</button>
+</div>
+<div class="api-selector">
+<div class="api-option gemini selected" onclick="selectApiProvider('gemini')">
+<h4>✨ Gemini (Google)</h4>
+<span class="model-name">gemini-2.5-flash</span>
+<span class="free-badge">GRÁTIS • 60 req/min</span>
+</div>
+<div class="api-option mistral" onclick="selectApiProvider('mistral')">
+<h4>🌪️ Mistral AI</h4>
+<span class="model-name">mistral-7b / mixtral-8x7b</span>
+<span class="free-badge">GRÁTIS • Open-source</span>
+</div>
+<div class="api-option deepseek" onclick="selectApiProvider('deepseek')">
+<h4>🧠 DeepSeek</h4>
+<span class="model-name">deepseek-chat / deepseek-coder</span>
+<span class="free-badge">GRÁTIS • Open-source</span>
+</div>
+<div class="api-option groq" onclick="selectApiProvider('groq')">
+<h4>🦙 Llama 3 (Groq)</h4>
+<span class="model-name">llama-3.1-8b</span>
+<span class="free-badge">GRÁTIS • rápido</span>
+</div>
+</div>
+
+<div id="gemini-config">
+<p class="modal-text">
+<strong>1.</strong> Acesse: <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a><br>
+<strong>2.</strong> Faça login com Google<br>
+<strong>3.</strong> Clique em "Create API Key"<br>
+<strong>4.</strong> Cole abaixo:
+</p>
+<div class="key-grid">
+<input type="password" id="gemini-key" class="modal-input key-input" placeholder="Cole sua chave Gemini (AIzaSy...)">
+<button class="key-btn btn-gemini" onclick="testApiKey('gemini')">✓ Testar</button>
+</div>
+</div>
+
+<div id="mistral-config" style="display:none">
+<p class="modal-text">
+<strong>1.</strong> Acesse: <a href="https://console.mistral.ai/api-keys/" target="_blank">Mistral AI Platform</a><br>
+<strong>2.</strong> Crie conta gratuita<br>
+<strong>3.</strong> Gere sua chave API<br>
+<strong>4.</strong> Cole abaixo:
+</p>
+<div class="key-grid">
+<input type="password" id="mistral-key" class="modal-input key-input" placeholder="Cole sua chave Mistral">
+<button class="key-btn btn-mistral" onclick="testApiKey('mistral')">✓ Testar</button>
+</div>
+</div>
+
+<div id="deepseek-config" style="display:none">
+<p class="modal-text">
+<strong>1.</strong> Acesse: <a href="https://platform.deepseek.com/api_keys" target="_blank">DeepSeek Platform</a><br>
+<strong>2.</strong> Crie conta gratuita<br>
+<strong>3.</strong> Gere sua chave API<br>
+<strong>4.</strong> Cole abaixo:
+</p>
+<div class="key-grid">
+<input type="password" id="deepseek-key" class="modal-input key-input" placeholder="Cole sua chave DeepSeek">
+<button class="key-btn btn-deepseek" onclick="testApiKey('deepseek')">✓ Testar</button>
+</div>
+</div>
+
+<div id="groq-config" style="display:none">
+<p class="modal-text">
+<strong>1.</strong> Acesse: <a href="https://console.groq.com/keys" target="_blank">Groq Console</a><br>
+<strong>2.</strong> Crie conta gratuita<br>
+<strong>3.</strong> Copie sua chave<br>
+<strong>4.</strong> Cole abaixo:
+</p>
+<div class="key-grid">
+<input type="password" id="groq-key" class="modal-input key-input" placeholder="Cole sua chave Groq (gsk_...)">
+<button class="key-btn btn-groq" onclick="testApiKey('groq')">✓ Testar</button>
+</div>
+</div>
+
+<div style="margin:20px 0">
+<div class="modal-label">Chaves Salvas:</div>
+<div id="saved-keys-container">
+<div class="key-item">
+<span>Nenhuma chave configurada ainda</span>
+</div>
+</div>
+</div>
+
+<div style="margin:20px 0">
+<div class="modal-label">Resultado do Auto Config:</div>
+<div id="auto-config-results">
+</div>
+</div>
+
+<div class="modal-buttons">
+<button class="modal-btn btn-secondary" onclick="hideApiModal()">Fechar</button>
+<button class="modal-btn btn-primary" onclick="saveAllApiKeys()">💾 Salvar Todas</button>
+<button class="modal-btn btn-primary" onclick="autoConfigAll()">🤖 AUTO CONFIG</button>
+</div>
+
+<p style="color:#8b949e;font-size:11px;margin-top:15px;text-align:center">
+⚠️ Suas chaves ficam armazenadas apenas neste navegador (localStorage).<br>
+Nunca são enviadas para servidores externos.
+</p>
+</div>
+</div>
+
+<div id="mysword-float-btn" onclick="toggleFloatWindow()">⚔️</div>
+<div id="mysword-float-window">
+<div class="float-window-header">
+<div class="logo-text">My<span>Sword</span> AI</div>
+<div class="window-controls">
+<button class="window-control-btn" id="minimize-btn" title="Minimizar" onclick="minimizeWindow()">─</button>
+<button class="window-control-btn" id="maximize-btn" title="Maximizar" onclick="maximizeWindow()">□</button>
+<button class="window-control-btn" id="fullscreen-btn" title="Tela Cheia" onclick="toggleFullscreen()">⛶</button>
+<button class="window-control-btn" id="close-float-btn" title="Fechar" onclick="toggleFloatWindow()">×</button>
+</div>
+</div>
+
+<div class="float-window-content">
+<div id="model-selector">
+<button class="model-btn active gemini-btn" onclick="setActiveModel('gemini')">✨ Gemini</button>
+<button class="model-btn mistral-btn" onclick="setActiveModel('mistral')">🌪️ Mistral</button>
+<button class="model-btn deepseek-btn" onclick="setActiveModel('deepseek')">🧠 DeepSeek</button>
+<button class="model-btn groq-btn" onclick="setActiveModel('groq')">🦙 Llama</button>
+</div>
+
+<div class="float-controls">
+<button class="float-btn" onclick="toggleTheme()" title="Alternar Tema">🌓</button>
+<button class="float-btn" onclick="showApiModal()" title="Configurar API Keys">🔑</button>
+<button class="float-btn" onclick="clearFloatChat()" title="Limpar Chat">🗑️</button>
+</div>
+
+<div class="float-input-area">
+<div class="float-input-wrapper">
+<div class="prompt-indicator" id="prompt-indicator"></div>
+<span style="color: #8b949e; margin-right: 8px;">🔍</span>
+<input type="text" id="float-user-input" placeholder="Pergunte sobre teologia assembleiana..."
+onkeydown="if(event.key === 'Enter' || event.keyCode === 13) sendFloatMessage()">
+</div>
+<button id="float-send-btn" onclick="sendFloatMessage()">➤</button>
+</div>
+
+<div class="float-quick-actions">
+<button class="float-quick-btn" onclick="selectFloatPrompt('visao')">
+<span class="btn-emoji">👁️</span>
+<span class="btn-text">Visão Geral</span>
+</button>
+<button class="float-quick-btn" onclick="selectFloatPrompt('esboco')">
+<span class="btn-emoji">📝</span>
+<span class="btn-text">Esboço</span>
+</button>
+<button class="float-quick-btn" onclick="selectFloatPrompt('exegese')">
+<span class="btn-emoji">🔬</span>
+<span class="btn-text">Exegese</span>
+</button>
+<button class="float-quick-btn" onclick="selectFloatPrompt('aplicacao')">
+<span class="btn-emoji">💡</span>
+<span class="btn-text">Aplicação</span>
+</button>
+<button class="float-quick-btn" onclick="selectFloatPrompt('contexto')">
+<span class="btn-emoji">🏛️</span>
+<span class="btn-text">Contexto Histórico</span>
+</button>
+<button class="float-quick-btn" onclick="selectFloatPrompt('thompson')">
+<span class="btn-emoji">📖</span>
+<span class="btn-text">Thompson</span>
+</button>
+</div>
+
+<div id="float-chat-container"></div>
+</div>
+</div>
+
+<script>
+// CONFIGURAÇÕES
+let apiKeys = {
+gemini: '',
+mistral: '',
+deepseek: '',
+groq: ''
+};
+let activeModel = 'gemini';
+let floatChatHistory = [];
+let isPrivateMode = false;
+let floatWindowOpen = false;
+let selectedPrompt = '';
+let apiProvider = 'gemini';
+let isMinimized = false;
+let isMaximized = false;
+let isFullscreen = false;
+
+// MODELOS DESCOBERTOS
+let discoveredModels = {
+gemini: '',
+mistral: '',
+deepseek: '',
+groq: ''
+};
+
+// MODELOS PADRÃO
+const defaultModels = {
+gemini: 'gemini-1.5-flash-latest',
+mistral: 'mistral-small-latest',
+deepseek: 'deepseek-chat',
+groq: 'llama-3.1-8b-instant'
+};
+
+// PERFIL TEOLÓGICO ASSEMBLEIANO PADRÃO
+const defaultProfile = `Você é um assistente teológico especializado na doutrina das Assembleias de Deus no Brasil, com base nos autores e comentaristas publicados pela CPAD (Casa Publicadora das Assembleias de Deus).
+
+SUA ESPECIALIDADE:
+- Teologia Pentecostal Assembleiana tradicional
+- Comentários de Escola Dominical (lições bíblicas da CPAD)
+- Doutrina assembleiana histórica e contemporânea
+- Hermenêutica e exegese no contexto pentecostal
+
+REFERÊNCIAS E AUTORES DE BASE:
+1. "PAIS" DA TEOLOGIA ASSEMBLEIANA (CLÁSSICOS/IN MEMORIAM):
+- Pr. Antonio Gilberto - "Pai da Escola Dominical" no Brasil, autor do "Manual da Escola Dominical"
+- Pr. Eurico Bergstén - Teólogo sistemático, comentarista histórico
+- Pr. Severino Pedro da Silva - Maior especialista em Escatologia da denominação
+- Pr. Claudionor de Andrade - Escritor prolífico, apologista, historiador (consultor doutrinário)
+- Pr. Lawrence Olson - Missionário, estruturou doutrinas pentecostais
+- Pr. Emílio Conde - Historiador das Assembleias de Deus no Brasil
+- Pr. Alcebíades Pereira Vasconcelos - Especialista em obreiros e liturgia
+- Pr. Nels Nelson - Pioneiro na literatura escrita da igreja
+- Pr. Orlando Boyer - Autor da "Pequena Enciclopédia Bíblica"
+- Pr. Gustavo Kessler - Referência em doutrina e costumes
+- Pr. Valdir Bícego - Pregador e comentarista
+- Pr. Estevam Ângelo de Souza - Comentários profundos
+- Pr. Abraão de Almeida - Autor clássico amplamente lido
+- Pr. Geziel Gomes - Grande pregador com obras publicadas
+- Pr. Tarcísio Gilberto - Teólogo e hebraísta
+
+2. COMENTARISTAS DE LIÇÕES BÍBLICAS E TEÓLOGOS ATUAIS:
+- Pr. Elienai Cabral - Especialista em Efésios e Romanos
+- Pr. Esequias Soares - Apologética e autoridade em Cânon Bíblico
+- Pr. Elinaldo Renovato - Ética Cristã e Família
+- Pr. José Gonçalves - Teologia contemporânea e avivamento
+- Pr. Douglas Baptista - Liderança do Conselho de Educação
+- Pr. Osiel Gomes - Liderança e obras paulinas
+- Pr. Claiton Pommerening - História e Pentecostalismo
+- Pr. Wagner Gaby - Epístolas Gerais
+- Pr. Reynaldo Odilo - Aplicação prática e jurídica da Bíblia
+- Pr. Valmir Nascimento - Apologética cultural e jovens
+- Pr. Natalino das Neves - Justiça social e profetas menores
+- Pr. Alexandre Coelho - Juventude e teologia prática
+- Pr. Silas Daniel - Historiador, especialista em Arminianismo
+- Pr. César Moisés Carvalho - Pós-modernidade e educação
+- Pr. Elias Torralbo - Teólogo e diretor executivo da FAESP
+- Pr. Jamierson Oliveira - Juventude
+- Pr. Marcelo Olive - Redator e comentarista
+- Pr. Esdras Bentho - Hermenêutica (interpretação bíblica)
+- Pr. Luíz César Mariano - Editor de Bíblias de estudo da CPAD
+
+3. AUTORES DE REFERÊNCIA, LIDERANÇA E EDUCAÇÃO CRISTÃ:
+- Pr. José Wellington Bezerra da Costa - Presidente de honra da CGADB
+- Pr. Ciro Sanches Zibordi - Apologista, série "Erros que os pregadores cometem"
+- Pr. Geremias do Couto - Jornalista e teólogo, reflexão histórica
+- Pr. Isael de Araujo - Principal historiador atual (Dicionário do Movimento Pentecostal)
+- Pr. Marcos Tuler - Maior autoridade em Pedagogia e Didática para professores
+- Pr. Nemuel Kessler - Administração eclesiástica e cerimonial
+- Pr. Paulo Romeiro - Apologética contra neopentecostalismo
+- Pr. Jamiel de Oliveira Lopes - Sociólogo, área de jovens/adolescentes
+- Profª. Telma Bueno - Educação Cristã infanto-juvenil
+- Profª. Helena Figueiredo - Ministério infantil
+- Pr. Joá Caitano - Escritor e líder
+- Pr. Kemuel Sotero - Líder no Conselho de Doutrina
+- Pr. Roberto Cruvinel - Apologista e escritor
+- Pr. Messias Ribeiro - Família e casamento
+- Pr. Abiezer Apolinário - Jurista e temas de cidadania
+- Pr. Dejair Batista Silvério - Comentarista ocasional
+- Pr. Donizeti Lee - Música e louvor
+- Pr. Napoleão de Castro - Batismo no Espírito Santo
+
+DIRETRIZES DE RESPOSTA:
+1. Baseie-se sempre nos ensinamentos desses autores quando relevante
+2. Priorize a visão teológica assembleiana tradicional
+3. Use linguagem pastoral e acessível, adequada ao contexto brasileiro
+4. Cite versículos bíblicos apropriados (preferencialmente Almeida Corrigida Fiel)
+5. Evite influências de outras vertentes teológicas não alinhadas com o pentecostalismo assembleiano
+6. Quando abordar temas doutrinários, faça referência aos autores especialistas no assunto
+7. Mantenha o foco na edificação, ensino e aplicação prática para a vida cristã
+
+Responda sempre em português brasileiro de forma clara, organizada e fundamentada biblicamente.`;
+
+// DIRETRIZES THOMPSON
+const thompsonGuidelines = `[DIRETRIZ DE PERSONA]
+Você é o motor de indexação da Bíblia de Referência Thompson com inteligência de profundidade temática.
+[REGRAS DE RESPOSTA - TRAVA RÍGIDA]
+EXTENSÃO VARIÁVEL: A quantidade de versículos na cadeia deve ser proporcional à importância do tema.
+SISTEMA DE CADEIA: Toda resposta deve seguir o fluxo: Versículo -> Tópico Curto -> Link Numérico.
+SEM COMENTÁRIOS: Proibido adicionar opiniões ou nomes de autores.
+PADRÃO DE SAÍDA: - [Nº do Índice] TÍTULO DO TEMA
+Lista numerada de versículos com links "Siga para".
+Indicação de [Fim da Cadeia].`;
+
+// DIRETRIZES DE EXEGESE
+const exegeseGuidelines = `[DIRETRIZ DE PERSONA]
+Você é um Especialista em Exegese e Manuscritologia das Assembleias de Deus e da CPAD.
+[PADRÃO DE SAÍDA OBRIGATÓRIO]
+## 1. ANÁLISE MORFOLÓGICA [STRONG]
+- [Palavra em Português] -> [Original/Transliteração]: (Definição gramatical e léxica exaustiva).
+## 2. DIAGRAMA DE ESTRUTURA LITERÁRIA
+(Representação visual da organização do texto, destacando o Ponto Focal/Quiasmo).
+## 3. SÍNTESE DO MESTRE (EXEGESE APLICADA)
+(Conclusão técnica baseada na escola de Esdras Bentho).`;
+
+// Configuração dos 6 modos de análise
+const modeGuidelines = {
+'visao': `Você opera no modo [VISÃO GERAL]. Forneça um panorama e síntese teológica assembleiana sobre o tema solicitado.`,
+'esboco': `Você opera no modo [ESBOÇO]. Crie uma estrutura homilética para pregação assembleiana.`,
+'exegese': exegeseGuidelines,
+'aplicacao': `Você opera no modo [APLICAÇÃO]. Foque na vida diária e prática cristã.`,
+'contexto': `Você opera no modo [CONTEXTO HISTÓRICO]. Aborde cultura e arqueologia da época.`,
+'thompson': thompsonGuidelines
+};
+
+const prompts = {
+'visao': 'Forneça uma visão geral assembleiana sobre: ',
+'esboco': 'Crie um esboço para pregação assembleiana sobre: ',
+'exegese': 'Faça análise exegética detalhada de: ',
+'aplicacao': 'Como aplicar na vida cristã prática: ',
+'contexto': 'Explique o contexto histórico-cultural de: ',
+'thompson': 'Análise Thompson para o tema: '
+};
+
+const promptNames = {
+'visao': 'Visão Geral',
+'esboco': 'Esboço',
+'exegese': 'Exegese',
+'aplicacao': 'Aplicação',
+'contexto': 'Contexto Histórico',
+'thompson': 'Thompson'
+};
+
+// UTILIDADES
+function storageAvailable(type) {
+try {
+const storage = window[type];
+const testKey = '__storage_test__';
+storage.setItem(testKey, testKey);
+storage.removeItem(testKey);
+return true;
+} catch (e) {
+return false;
+}
+}
+
+function copyToClipboard(text) {
+navigator.clipboard.writeText(text).catch(() => {
+const ta = document.createElement('textarea');
+ta.value = text;
+document.body.appendChild(ta);
+ta.select();
+document.execCommand('copy');
+document.body.removeChild(ta);
+});
+}
+
+// INICIALIZAÇÃO
+window.onload = function() {
+isPrivateMode = !storageAvailable('localStorage');
+if (!isPrivateMode) {
+// Carregar chaves salvas
+const savedKeys = localStorage.getItem('mysword_api_keys');
+if (savedKeys) {
+try {
+apiKeys = JSON.parse(savedKeys);
+} catch (e) {
+console.error('Erro ao carregar chaves:', e);
+}
+}
+// Carregar modelo ativo
+const savedModel = localStorage.getItem('mysword_active_model');
+if (savedModel) activeModel = savedModel;
+// Carregar histórico
+const savedHistory = localStorage.getItem('mysword_float_chat_history');
+if (savedHistory) floatChatHistory = JSON.parse(savedHistory);
+// Carregar tema
+const savedTheme = localStorage.getItem('mysword_theme');
+if (savedTheme === 'light') document.body.classList.add('light-mode');
+}
+updateModelButtons();
+loadFloatChatHistory();
+initializeVerseSelection();
+updateSavedKeysDisplay();
+};
+
+// SELEÇÃO DE VERSÍCULOS
+function initializeVerseSelection() {
+document.addEventListener('click', function(e) {
+const target = e.target;
+const text = target.textContent || target.innerText;
+const versePattern = /(\d?\s?[A-Za-zÀ-ÿ]+\.?\s?\d+:\d+(?:[-\d+,; ]*\d*)?)/;
+if (versePattern.test(text)) {
+const inputField = document.getElementById('float-user-input');
+if (selectedPrompt) {
+inputField.value = prompts[selectedPrompt] + text.trim();
+} else {
+inputField.value = text.trim();
+}
+inputField.focus();
+target.classList.add('selected');
+setTimeout(() => target.classList.remove('selected'), 1500);
+}
+});
+}
+
+// JANELA FLUTUANTE
+function toggleFloatWindow() {
+const floatWindow = document.getElementById('mysword-float-window');
+const floatBtn = document.getElementById('mysword-float-btn');
+if (!floatWindowOpen) {
+floatWindow.style.display = 'flex';
+floatBtn.innerHTML = '✕';
+floatBtn.style.transform = 'rotate(90deg)';
+floatWindowOpen = true;
+resetWindowState();
+setTimeout(() => document.getElementById('float-user-input').focus(), 300);
+} else {
+floatWindow.style.display = 'none';
+floatBtn.innerHTML = '⚔️';
+floatBtn.style.transform = 'rotate(0deg)';
+floatWindowOpen = false;
+}
+}
+
+function resetWindowState() {
+const floatWindow = document.getElementById('mysword-float-window');
+floatWindow.classList.remove('minimized', 'maximized', 'fullscreen');
+isMinimized = false;
+isMaximized = false;
+isFullscreen = false;
+floatWindow.style.width = '';
+floatWindow.style.height = '';
+floatWindow.style.maxWidth = '';
+floatWindow.style.maxHeight = '';
+floatWindow.style.bottom = '';
+floatWindow.style.right = '';
+floatWindow.style.borderRadius = '';
+floatWindow.style.border = '';
+}
+
+function minimizeWindow() {
+const floatWindow = document.getElementById('mysword-float-window');
+const minimizeBtn = document.getElementById('minimize-btn');
+if (isMinimized) {
+floatWindow.classList.remove('minimized');
+minimizeBtn.textContent = '─';
+minimizeBtn.title = 'Minimizar';
+isMinimized = false;
+} else {
+floatWindow.classList.add('minimized');
+minimizeBtn.textContent = '🗖';
+minimizeBtn.title = 'Restaurar';
+isMinimized = true;
+if (isMaximized) {
+floatWindow.classList.remove('maximized');
+isMaximized = false;
+document.getElementById('maximize-btn').textContent = '□';
+}
+if (isFullscreen) {
+floatWindow.classList.remove('fullscreen');
+isFullscreen = false;
+document.getElementById('fullscreen-btn').textContent = '⛶';
+}
+}
+}
+
+function maximizeWindow() {
+const floatWindow = document.getElementById('mysword-float-window');
+const maximizeBtn = document.getElementById('maximize-btn');
+if (isMaximized) {
+floatWindow.classList.remove('maximized');
+maximizeBtn.textContent = '□';
+maximizeBtn.title = 'Maximizar';
+isMaximized = false;
+if (isMinimized) {
+floatWindow.classList.remove('minimized');
+document.getElementById('minimize-btn').textContent = '─';
+isMinimized = false;
+}
+} else {
+floatWindow.classList.add('maximized');
+maximizeBtn.textContent = '🗗';
+maximizeBtn.title = 'Restaurar';
+isMaximized = true;
+if (isMinimized) {
+floatWindow.classList.remove('minimized');
+document.getElementById('minimize-btn').textContent = '─';
+isMinimized = false;
+}
+if (isFullscreen) {
+floatWindow.classList.remove('fullscreen');
+isFullscreen = false;
+document.getElementById('fullscreen-btn').textContent = '⛶';
+}
+}
+}
+
+function toggleFullscreen() {
+const floatWindow = document.getElementById('mysword-float-window');
+const fullscreenBtn = document.getElementById('fullscreen-btn');
+if (isFullscreen) {
+floatWindow.classList.remove('fullscreen');
+fullscreenBtn.textContent = '⛶';
+fullscreenBtn.title = 'Tela Cheia';
+isFullscreen = false;
+if (isMaximized) floatWindow.classList.add('maximized');
+} else {
+floatWindow.classList.add('fullscreen');
+fullscreenBtn.textContent = '🗕';
+fullscreenBtn.title = 'Sair da Tela Cheia';
+isFullscreen = true;
+if (isMinimized) {
+floatWindow.classList.remove('minimized');
+document.getElementById('minimize-btn').textContent = '─';
+isMinimized = false;
+}
+if (isMaximized) {
+floatWindow.classList.remove('maximized');
+document.getElementById('maximize-btn').textContent = '□';
+isMaximized = false;
+}
+}
+}
+
+document.addEventListener('click', function(e) {
+const floatWindow = document.getElementById('mysword-float-window');
+const floatBtn = document.getElementById('mysword-float-btn');
+const apiModal = document.getElementById('api-modal');
+if (floatWindowOpen && !floatWindow.contains(e.target) && !floatBtn.contains(e.target) &&
+(!apiModal || apiModal.style.display === 'none' || !apiModal.contains(e.target))) {
+toggleFloatWindow();
+}
+});
+
+// MENSAGENS
+function addFloatMessage(text, sender, model = activeModel) {
+const container = document.getElementById('float-chat-container');
+const messageDiv = document.createElement('div');
+messageDiv.className = `float-message float-${sender}-message`;
+
+if (sender === 'ai') {
+const header = document.createElement('div');
+header.className = 'message-header';
+let badgeClass = 'gemini-badge';
+let modelName = 'Gemini';
+if (model === 'mistral') { badgeClass = 'mistral-badge'; modelName = 'Mistral'; }
+else if (model === 'deepseek') { badgeClass = 'deepseek-badge'; modelName = 'DeepSeek'; }
+else if (model === 'groq') { badgeClass = 'groq-badge'; modelName = 'Llama'; }
+header.innerHTML = `⚔️ MySword AI <span class="ai-badge ${badgeClass}">${modelName}</span>`;
+messageDiv.appendChild(header);
+
+const content = document.createElement('div');
+content.className = 'message-content';
+content.style.fontSize = '14px';
+content.style.lineHeight = '1.4';
+const formatted = text
+.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+.replace(/\*(.*?)\*/g, '<em>$1</em>')
+.replace(/`(.*?)`/g, '<code>$1</code>')
+.replace(/\n/g, '<br>');
+content.innerHTML = formatted;
+messageDiv.appendChild(content);
+
+const copyBtn = document.createElement('button');
+copyBtn.className = 'copy-btn';
+copyBtn.innerHTML = '📋 Copiar';
+copyBtn.onclick = function() {
+copyToClipboard(text);
+copyBtn.innerHTML = '✅ Copiado!';
+copyBtn.style.background = 'var(--secondary)';
+copyBtn.style.borderColor = 'var(--secondary)';
+copyBtn.style.color = 'white';
+setTimeout(() => {
+copyBtn.innerHTML = '📋 Copiar';
+copyBtn.style.background = '';
+copyBtn.style.borderColor = '';
+copyBtn.style.color = '';
+}, 2000);
+};
+messageDiv.appendChild(copyBtn);
+} else {
+const content = document.createElement('div');
+content.style.fontSize = '14px';
+content.style.lineHeight = '1.4';
+const formatted = text
+.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+.replace(/\*(.*?)\*/g, '<em>$1</em>')
+.replace(/`(.*?)`/g, '<code>$1</code>')
+.replace(/\n/g, '<br>');
+content.innerHTML = formatted;
+messageDiv.appendChild(content);
+}
+
+container.appendChild(messageDiv);
+
+// FIX MOBILE: Timeout para garantir que o render terminou antes do scroll
+setTimeout(() => {
+container.scrollTop = container.scrollHeight;
+}, 100);
+
+if (sender === 'user' || sender === 'ai') {
+floatChatHistory.push({ text, sender, model, timestamp: new Date().toISOString() });
+if (!isPrivateMode) {
+localStorage.setItem('mysword_float_chat_history', JSON.stringify(floatChatHistory));
+}
+}
+}
+
+function loadFloatChatHistory() {
+const container = document.getElementById('float-chat-container');
+container.innerHTML = '';
+if (floatChatHistory.length === 0) {
+addFloatMessage('✨ Olá! Sou o MySword AI, seu assistente teológico assembleiano. Escolha sua IA preferida acima e faça sua pergunta!', 'ai');
+} else {
+floatChatHistory.forEach(msg => addFloatMessage(msg.text, msg.sender, msg.model || 'gemini'));
+}
+}
+
+function selectFloatPrompt(promptType) {
+document.querySelectorAll('.float-quick-btn').forEach(btn => btn.classList.remove('selected'));
+event.currentTarget.classList.add('selected');
+selectedPrompt = promptType;
+const indicator = document.getElementById('prompt-indicator');
+indicator.textContent = `Modo: ${promptNames[promptType]}`;
+indicator.className = 'prompt-indicator active';
+const inputField = document.getElementById('float-user-input');
+const currentValue = inputField.value.trim();
+if (currentValue && !currentValue.startsWith(prompts[promptType]) && currentValue.length < 50) {
+inputField.value = prompts[promptType] + currentValue;
+}
+inputField.focus();
+}
+
+function setActiveModel(model) {
+activeModel = model;
+updateModelButtons();
+if (!isPrivateMode) {
+localStorage.setItem('mysword_active_model', model);
+}
+if (!apiKeys[model] && model !== 'gemini') {
+addFloatMessage(`⚠️ Nenhuma chave ${model.toUpperCase()} configurada. Clique em 🔑 para adicionar.`, 'ai');
+}
+}
+
+function updateModelButtons() {
+document.querySelectorAll('.model-btn').forEach(btn => btn.classList.remove('active'));
+document.querySelector(`.${activeModel}-btn`).classList.add('active');
+}
+
+// API KEYS - MODAL
+function showApiModal() {
+document.getElementById('api-modal').style.display = 'flex';
+updateSavedKeysDisplay();
+document.getElementById('gemini-key').value = apiKeys.gemini || '';
+document.getElementById('mistral-key').value = apiKeys.mistral || '';
+document.getElementById('deepseek-key').value = apiKeys.deepseek || '';
+document.getElementById('groq-key').value = apiKeys.groq || '';
+document.getElementById('api-modal').onclick = function(e) {
+if (e.target === this) hideApiModal();
+};
+}
+
+function hideApiModal() {
+document.getElementById('api-modal').style.display = 'none';
+}
+
+function selectApiProvider(provider) {
+apiProvider = provider;
+document.querySelectorAll('.api-option').forEach(opt => opt.classList.remove('selected'));
+document.querySelector(`.${provider}`).classList.add('selected');
+document.getElementById('gemini-config').style.display = 'none';
+document.getElementById('mistral-config').style.display = 'none';
+document.getElementById('deepseek-config').style.display = 'none';
+document.getElementById('groq-config').style.display = 'none';
+document.getElementById(`${provider}-config`).style.display = 'block';
+}
+
+function updateSavedKeysDisplay() {
+const container = document.getElementById('saved-keys-container');
+container.innerHTML = '';
+let hasKeys = false;
+if (apiKeys.gemini) {
+hasKeys = true;
+container.innerHTML += `<div class="key-item"><span><strong>Gemini:</strong> <span class="key-preview">${apiKeys.gemini.substring(0,12)}...</span></span><span class="key-status status-valid">✓ Válida</span></div>`;
+}
+if (apiKeys.mistral) {
+hasKeys = true;
+container.innerHTML += `<div class="key-item"><span><strong>Mistral:</strong> <span class="key-preview">${apiKeys.mistral.substring(0,12)}...</span></span><span class="key-status status-valid">✓ Válida</span></div>`;
+}
+if (apiKeys.deepseek) {
+hasKeys = true;
+container.innerHTML += `<div class="key-item"><span><strong>DeepSeek:</strong> <span class="key-preview">${apiKeys.deepseek.substring(0,12)}...</span></span><span class="key-status status-valid">✓ Válida</span></div>`;
+}
+if (apiKeys.groq) {
+hasKeys = true;
+container.innerHTML += `<div class="key-item"><span><strong>Llama:</strong> <span class="key-preview">${apiKeys.groq.substring(0,12)}...</span></span><span class="key-status status-valid">✓ Válida</span></div>`;
+}
+if (!hasKeys) {
+container.innerHTML = '<div class="key-item"><span>🔑 Nenhuma chave configurada ainda</span></div>';
+}
+}
+
+async function testApiKey(provider) {
+const keyInput = document.getElementById(`${provider}-key`);
+const key = keyInput.value.trim();
+if (!key) { alert('⚠️ Insira uma chave primeiro!'); return; }
+let isValid = false;
+let message = '';
+try {
+if (provider === 'gemini') {
+isValid = key.startsWith('AIzaSy');
+message = isValid ? '✅ Chave Gemini válida!' : '❌ Chave inválida. Deve começar com "AIzaSy"';
+} else if (provider === 'mistral') {
+isValid = key.length > 20;
+message = isValid ? '✅ Chave Mistral válida!' : '❌ Formato inválido.';
+} else if (provider === 'deepseek') {
+isValid = key.startsWith('sk-') || key.length > 30;
+message = isValid ? '✅ Chave DeepSeek válida!' : '❌ Formato inválido.';
+} else if (provider === 'groq') {
+isValid = key.startsWith('gsk_') && key.length > 30;
+message = isValid ? '✅ Chave Groq válida!' : '❌ Formato inválido. Deve começar com "gsk_"';
+}
+} catch (e) { message = `❌ Erro ao testar: ${e.message}`; }
+alert(message);
+if (isValid) {
+apiKeys[provider] = key;
+updateSavedKeysDisplay();
+}
+}
+
+function saveAllApiKeys() {
+apiKeys.gemini = document.getElementById('gemini-key').value.trim();
+apiKeys.mistral = document.getElementById('mistral-key').value.trim();
+apiKeys.deepseek = document.getElementById('deepseek-key').value.trim();
+apiKeys.groq = document.getElementById('groq-key').value.trim();
+if (!isPrivateMode) {
+localStorage.setItem('mysword_api_keys', JSON.stringify(apiKeys));
+}
+updateSavedKeysDisplay();
+hideApiModal();
+if (apiKeys.gemini || apiKeys.mistral || apiKeys.deepseek || apiKeys.groq) {
+addFloatMessage('✅ Chaves salvas com sucesso! Escolha sua IA preferida nos botões acima.', 'ai');
+}
+}
+
+async function autoConfigAll() {
+const btn = document.querySelector('.modal-btn.btn-primary[onclick="autoConfigAll()"]');
+const originalText = btn.innerHTML;
+btn.innerHTML = '⏳ Testando...';
+btn.disabled = true;
+const resultsContainer = document.getElementById('auto-config-results');
+resultsContainer.innerHTML = '<div class="key-item"><span>⏳ Testando todas as chaves...</span></div>';
+const geminiKey = document.getElementById('gemini-key').value.trim();
+const mistralKey = document.getElementById('mistral-key').value.trim();
+const deepseekKey = document.getElementById('deepseek-key').value.trim();
+const groqKey = document.getElementById('groq-key').value.trim();
+const results = {};
+if (geminiKey) results.gemini = await testAndDiscoverGemini(geminiKey);
+if (mistralKey) results.mistral = await testAndDiscoverMistral(mistralKey);
+if (deepseekKey) results.deepseek = await testAndDiscoverDeepSeek(deepseekKey);
+if (groqKey) results.groq = await testAndDiscoverGroq(groqKey);
+updateAutoConfigResults(results);
+btn.innerHTML = originalText;
+btn.disabled = false;
+}
+
+async function testAndDiscoverGemini(apiKey) {
+try {
+const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+if (!response.ok) return { isValid: false, error: `HTTP ${response.status}` };
+const data = await response.json();
+if (data.models) {
+const geminiModels = data.models.filter(m => m.name.includes("gemini") && m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"));
+if (geminiModels.length > 0) {
+geminiModels.sort((a, b) => b.name.localeCompare(a.name));
+const chosenModel = geminiModels[0].name.replace("models/", "");
+discoveredModels.gemini = chosenModel;
+return { isValid: true, model: chosenModel };
+}
+}
+return { isValid: false, error: "Nenhum modelo Gemini encontrado." };
+} catch (error) { return { isValid: false, error: error.message }; }
+}
+
+async function testAndDiscoverMistral(apiKey) {
+try {
+const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+method: 'POST',
+headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
+body: JSON.stringify({model: 'mistral-small-latest', messages: [{role: 'user', content: 'Test'}], max_tokens: 1})
+});
+if (!response.ok) return { isValid: false, error: `HTTP ${response.status}` };
+discoveredModels.mistral = 'mistral-small-latest';
+return { isValid: true, model: 'mistral-small-latest' };
+} catch (error) { return { isValid: false, error: error.message }; }
+}
+
+async function testAndDiscoverDeepSeek(apiKey) {
+try {
+const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+method: 'POST',
+headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
+body: JSON.stringify({model: 'deepseek-chat', messages: [{role: 'user', content: 'Test'}], max_tokens: 1})
+});
+if (!response.ok) return { isValid: false, error: `HTTP ${response.status}` };
+discoveredModels.deepseek = 'deepseek-chat';
+return { isValid: true, model: 'deepseek-chat' };
+} catch (error) { return { isValid: false, error: error.message }; }
+}
+
+async function testAndDiscoverGroq(apiKey) {
+try {
+const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+method: 'POST',
+headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
+body: JSON.stringify({model: 'llama-3.1-8b-instant', messages: [{role: 'user', content: 'Test'}], max_tokens: 1})
+});
+if (!response.ok) return { isValid: false, error: `HTTP ${response.status}` };
+discoveredModels.groq = 'llama-3.1-8b-instant';
+return { isValid: true, model: 'llama-3.1-8b-instant' };
+} catch (error) { return { isValid: false, error: error.message }; }
+}
+
+function updateAutoConfigResults(results) {
+const container = document.getElementById('auto-config-results');
+if (!container) return;
+let html = '';
+for (const [provider, result] of Object.entries(results)) {
+html += result.isValid ? `<div class="key-item"><span><strong>${provider.toUpperCase()}:</strong> ✅ Válida | Modelo: ${result.model}</span></div>` : `<div class="key-item"><span><strong>${provider.toUpperCase()}:</strong> ❌ Erro: ${result.error}</span></div>`;
+}
+if (Object.keys(results).length === 0) html = '<div class="key-item"><span>⚠️ Nenhuma chave para testar</span></div>';
+container.innerHTML = html;
+}
+
+async function sendFloatMessage() {
+const input = document.getElementById('float-user-input');
+const userText = input.value.trim();
+if (!userText) return;
+
+if (!apiKeys[activeModel]) {
+addFloatMessage(`⚠️ Nenhuma chave ${activeModel.toUpperCase()} configurada.`, 'ai');
+showApiModal();
+return;
+}
+
+addFloatMessage(userText, 'user');
+input.value = '';
+if (selectedPrompt) {
+document.querySelectorAll('.float-quick-btn').forEach(btn => btn.classList.remove('selected'));
+selectedPrompt = '';
+document.getElementById('prompt-indicator').className = 'prompt-indicator';
+}
+
+const container = document.getElementById('float-chat-container');
+const loadingDiv = document.createElement('div');
+loadingDiv.className = 'float-message float-ai-message';
+loadingDiv.innerHTML = '<div class="message-header">⚔️ MySword AI</div><div class="loading"><span></span><span></span><span></span></div>';
+container.appendChild(loadingDiv);
+setTimeout(() => { container.scrollTop = container.scrollHeight; }, 100);
+
+try {
+let responseText = '';
+if (activeModel === 'gemini') responseText = await callGeminiAPI(userText);
+else if (activeModel === 'mistral') responseText = await callMistralAPI(userText);
+else if (activeModel === 'deepseek') responseText = await callDeepSeekAPI(userText);
+else if (activeModel === 'groq') responseText = await callGroqAPI(userText);
+
+container.removeChild(loadingDiv);
+addFloatMessage(responseText, 'ai', activeModel);
+} catch (error) {
+if (container.contains(loadingDiv)) container.removeChild(loadingDiv);
+addFloatMessage(`❌ Erro: ${error.message}`, 'ai', activeModel);
+}
+}
+
+async function callGeminiAPI(userText) {
+let fullPrompt = selectedPrompt ? `${defaultProfile}\n${modeGuidelines[selectedPrompt]}\nPergunta: ${userText}` : `${defaultProfile}\nPergunta: ${userText}`;
+const modelName = discoveredModels.gemini || defaultModels.gemini;
+const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`, {
+method: 'POST',
+headers: {'Content-Type': 'application/json', 'x-goog-api-key': apiKeys.gemini},
+body: JSON.stringify({contents: [{ parts: [{ text: fullPrompt }] }], generationConfig: {temperature: 0.7, maxOutputTokens: 2000}})
+});
+if (!response.ok) throw new Error(`HTTP ${response.status}`);
+const data = await response.json();
+return data.candidates?.[0]?.content?.parts?.[0]?.text || 'Erro na resposta';
+}
+
+async function callMistralAPI(userText) {
+let fullPrompt = selectedPrompt ? `${defaultProfile}\n${modeGuidelines[selectedPrompt]}\nPergunta: ${userText}` : `${defaultProfile}\nPergunta: ${userText}`;
+const modelName = discoveredModels.mistral || defaultModels.mistral;
+const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+method: 'POST',
+headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKeys.mistral}`},
+body: JSON.stringify({model: modelName, messages: [{role: 'user', content: fullPrompt}], temperature: 0.7})
+});
+if (!response.ok) throw new Error(`HTTP ${response.status}`);
+const data = await response.json();
+return data.choices?.[0]?.message?.content || 'Erro na resposta';
+}
+
+async function callDeepSeekAPI(userText) {
+let fullPrompt = selectedPrompt ? `${defaultProfile}\n${modeGuidelines[selectedPrompt]}\nPergunta: ${userText}` : `${defaultProfile}\nPergunta: ${userText}`;
+const modelName = discoveredModels.deepseek || defaultModels.deepseek;
+const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+method: 'POST',
+headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKeys.deepseek}`},
+body: JSON.stringify({model: modelName, messages: [{role: 'user', content: fullPrompt}], temperature: 0.7})
+});
+if (!response.ok) throw new Error(`HTTP ${response.status}`);
+const data = await response.json();
+return data.choices?.[0]?.message?.content || 'Erro na resposta';
+}
+
+async function callGroqAPI(userText) {
+let fullPrompt = selectedPrompt ? `${defaultProfile}\n${modeGuidelines[selectedPrompt]}\nPergunta: ${userText}` : `${defaultProfile}\nPergunta: ${userText}`;
+const modelName = discoveredModels.groq || defaultModels.groq;
+const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+method: 'POST',
+headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKeys.groq}`},
+body: JSON.stringify({model: modelName, messages: [{role: 'user', content: fullPrompt}], temperature: 0.7})
+});
+if (!response.ok) throw new Error(`HTTP ${response.status}`);
+const data = await response.json();
+return data.choices?.[0]?.message?.content || 'Erro na resposta';
+}
+
+// SHORTCUTS & THEME
+function toggleTheme() {
+const isLight = document.body.classList.toggle('light-mode');
+if (!isPrivateMode) localStorage.setItem('mysword_theme', isLight ? 'light' : 'dark');
+}
+
+function clearFloatChat() {
+if (confirm('Limpar histórico do chat?')) {
+floatChatHistory = [];
+if (!isPrivateMode) localStorage.removeItem('mysword_float_chat_history');
+loadFloatChatHistory();
+}
+}
+
+document.addEventListener('keydown', function(e) {
+if (e.ctrlKey && e.key === 'Enter') sendFloatMessage();
+if (e.key === 'Escape') if (document.getElementById('api-modal').style.display === 'flex') hideApiModal();
+});
+</script>
+</body>
+</html>
