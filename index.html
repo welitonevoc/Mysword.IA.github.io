@@ -3,1069 +3,2861 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>MySword AI - Assistente Teológico</title>
+<title>MySword iOS + AI Assistente Teológico</title>
 <style>
-/* RESET & VARIAVEIS */
-*{margin:0;padding:0;box-sizing:border-box}:root{--fonte-base:16px;--bg-dark:#0d1117;--bg-light:#ffffff;--text-dark:#e6edf3;--text-light:#1f2328;--primary:#1f6feb;--secondary:#238636;--accent:#f0883e;--gemini:#4285F4;--mistral:#6c47ff;--deepseek:#1a5fff;--groq:#f55325}body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg-dark);color:var(--text-dark);padding:20px;min-height:100vh;transition:all .3s ease;font-size:var(--fonte-base)}body.light-mode{background:var(--bg-light);color:var(--text-light)}.verse{cursor:pointer;padding:3px 6px;margin:2px;border-radius:4px;background:#161b22;transition:all .2s;border:1px solid transparent}.verse:hover{background:#1c3f8a;border-color:var(--primary)}.verse.selected{background:#0a5c4a;border-color:#238636}.copy-btn{background:#21262d;border:1px solid #30363d;color:var(--text-dark);padding:8px 16px;border-radius:6px;cursor:pointer;margin-top:10px;font-size:14px;transition:all .2s;display:inline-flex;align-items:center;gap:8px}.copy-btn:hover{background:#30363d}.loading{display:inline-flex;gap:5px;padding:15px}.loading span{width:8px;height:8px;background:var(--accent);border-radius:50%;animation:bounce 1.4s infinite ease-in-out}.loading span:nth-child(1){animation-delay:-.32s}.loading span:nth-child(2){animation-delay:-.16s}@keyframes bounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
+/* ================================================= */
+/* 1. FOTO DE PERFIL E SELETORES                    */
+/* ================================================= */
+.perfil-area {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.3);
+    background-color: #333;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    flex-shrink: 0;
+    background-image: url('https://cdn-icons-png.flaticon.com/512/3135/3135715.png');
+}
 
-/* MODAL */
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:9999;align-items:center;justify-content:center}.modal-content{background:#161b22;padding:25px;border-radius:12px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,.5);border:2px solid var(--accent)}.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.modal-header h3{color:var(--accent);margin:0}.close-btn{background:none;border:none;color:#8b949e;font-size:24px;cursor:pointer;padding:0;width:30px;height:30px;display:flex;align-items:center;justify-content:center}.close-btn:hover{color:var(--text-dark)}.modal-buttons{display:flex;gap:10px;margin-top:20px}.modal-btn{flex:1;padding:12px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;font-size:14px;transition:all .2s}.btn-primary{background:var(--primary);color:white}.btn-primary:hover{background:#1a7ff0}.btn-gemini{background:var(--gemini);color:white}.btn-gemini:hover{background:#3367d6}.btn-mistral{background:var(--mistral);color:white}.btn-mistral:hover{background:#5a3bd6}.btn-deepseek{background:var(--deepseek);color:white}.btn-deepseek:hover{background:#0d4dcc}.btn-groq{background:var(--groq);color:white}.btn-groq:hover{background:#d9421e}.btn-secondary{background:#21262d;color:var(--text-dark);border:1px solid #30363d}.btn-secondary:hover{background:#30363d}.modal-input,.modal-textarea{width:100%;padding:12px;margin:10px 0;border-radius:6px;border:2px solid #30363d;background:#0d1117;color:var(--text-dark);font-size:14px;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}.modal-textarea{min-height:200px;resize:vertical}.modal-input:focus,.modal-textarea:focus{outline:none;border-color:var(--accent)}.modal-text{color:#8b949e;margin-bottom:15px;line-height:1.5;font-size:14px}.modal-text a{color:#1f6feb;text-decoration:none}.modal-text a:hover{text-decoration:underline}.modal-label{color:var(--accent);font-weight:bold;margin-top:15px;margin-bottom:5px;display:block;font-size:14px}.profile-example{background:#21262d;padding:12px;border-radius:6px;margin:10px 0;border-left:3px solid var(--accent);font-size:13px}.profile-example strong{color:var(--accent)}.api-selector{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0}.api-option{padding:15px;border-radius:10px;cursor:pointer;border:2px solid #30363d;background:#21262d;transition:all .3s;text-align:center}.api-option:hover{transform:translateY(-3px);box-shadow:0 5px 15px rgba(0,0,0,.3);border-color:var(--primary)}.api-option.selected{border-color:var(--accent);background:#2d333b;transform:translateY(-3px)}.api-option.gemini{border-left:4px solid var(--gemini)}.api-option.mistral{border-left:4px solid var(--mistral)}.api-option.deepseek{border-left:4px solid var(--deepseek)}.api-option.groq{border-left:4px solid var(--groq)}.api-option h4{margin:0 0 5px 0;font-size:16px;color:var(--text-dark)}.api-option .model-name{font-size:12px;color:#8b949e;display:block;margin-top:3px}.api-option .free-badge{background:var(--accent);color:#000;padding:2px 6px;border-radius:10px;font-size:10px;display:inline-block;margin-top:5px;font-weight:bold}.key-grid{display:grid;grid-template-columns:1fr auto;gap:10px;margin:15px 0}.key-input{grid-column:1}.key-btn{grid-column:2;background:var(--primary);border:none;color:white;padding:10px 15px;border-radius:6px;cursor:pointer;transition:all .2s;font-weight:bold}.key-btn:hover{background:#1a7ff0}.key-item{background:#21262d;padding:12px;border-radius:8px;margin:8px 0;display:flex;justify-content:space-between;align-items:center;border:1px solid #30363d}.key-item .key-preview{font-family:monospace;font-size:14px;letter-spacing:1px;color:var(--text-dark)}.key-item .key-status{font-size:12px;padding:3px 8px;border-radius:10px;font-weight:bold}.status-valid{background:#238636;color:white}.status-invalid{background:#da3633;color:white}
+.ai-selector-container, .mode-selector-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 10px;
+}
 
-/* JANELA FLUTUANTE */
-#mysword-float-btn{position:fixed;bottom:25px;right:25px;width:60px;height:60px;background:linear-gradient(135deg,#1e6fbb,#0d4d9c);color:white;border-radius:50%;border:3px solid var(--accent);box-shadow:0 6px 20px rgba(0,0,0,.4);cursor:pointer;z-index:9998;display:flex;align-items:center;justify-content:center;font-size:28px;transition:all .3s cubic-bezier(.175,.885,.32,1.275)}#mysword-float-btn:hover{transform:scale(1.1);box-shadow:0 8px 25px rgba(0,0,0,.6)}#mysword-float-window{position:fixed;bottom:100px;right:25px;width:400px;max-width:90vw;max-height:70vh;background:#0d1117;border-radius:16px;border:2px solid var(--accent);box-shadow:0 15px 50px rgba(0,0,0,.7);z-index:9999;display:none;flex-direction:column;overflow:hidden;animation:floatWindowAppear .4s ease-out}@keyframes floatWindowAppear{from{opacity:0;transform:translateY(20px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}.float-window-header{background:linear-gradient(135deg,#1e6fbb 0%,#0d4d9c 100%);padding:12px 15px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--accent)}.float-window-header .logo-text{font-size:18px;margin:0;font-weight:bold;color:white}.float-window-header .logo-text span{color:var(--accent)}.float-window-content{flex:1;display:flex;flex-direction:column;overflow:hidden;height: 100%;}.float-controls{padding:8px 12px;margin:0;display:flex;gap:8px;background:#161b22;border-bottom:1px solid #30363d}.float-btn{background:#21262d;border:1px solid #30363d;color:var(--text-dark);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .2s}.float-btn:hover{background:var(--primary);border-color:var(--primary);color:white;transform:scale(1.05)}.float-input-area{display:flex;gap:10px;margin:0 12px 8px 12px;padding-top:8px}.float-input-wrapper{flex:1;background:#0d1117;border-radius:25px;padding:0 15px;display:flex;align-items:center;box-shadow:0 2px 10px rgba(0,0,0,.1);position:relative;border:1px solid #30363d}#float-user-input{flex:1;border:none;padding:12px 5px;font-size:16px;background:transparent;outline:none;color:var(--text-dark);width:100%}#float-send-btn{background:var(--accent);color:#333;border:none;width:48px;height:48px;border-radius:50%;cursor:pointer;font-size:18px;font-weight:bold;transition:all .2s;display:flex;align-items:center;justify-content:center}#float-send-btn:hover{background:#f0b232;transform:scale(1.05)}.float-quick-actions{padding:0 12px 8px 12px;display:flex;gap:6px;overflow-x:auto;overflow-y:hidden;background:#161b22;white-space:nowrap;scrollbar-width:thin;scrollbar-color:var(--accent) #30363d;max-height:70px}.float-quick-actions::-webkit-scrollbar{height:6px}.float-quick-actions::-webkit-scrollbar-track{background:#30363d;border-radius:3px}.float-quick-actions::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}.float-quick-actions::-webkit-scrollbar-thumb:hover{background:#f0b232}.float-quick-btn{background:#21262d;border:1px solid #30363d;color:var(--text-dark);padding:8px 12px;border-radius:8px;font-size:11px;cursor:pointer;transition:all .2s;text-align:center;font-weight:500;position:relative;display:inline-flex;flex-direction:column;align-items:center;gap:2px;min-height:50px;justify-content:center;min-width:80px;flex-shrink:0}.float-quick-btn .btn-emoji{font-size:16px}.float-quick-btn .btn-text{font-size:10px;line-height:1.2}.float-quick-btn:hover{background:#30363d;transform:translateY(-2px)}.float-quick-btn.selected{background:var(--primary);border:1px solid var(--primary);color:white;box-shadow:0 0 10px rgba(31,111,235,.5)}.float-quick-btn.selected::after{content:'✓';position:absolute;top:2px;right:4px;font-size:10px;color:white}.prompt-indicator{position:absolute;top:-25px;left:10px;background:var(--primary);color:white;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:bold;opacity:0;transform:translateY(10px);transition:all .3s ease}.prompt-indicator.active{opacity:1;transform:translateY(0)}
+.ai-selector, .mode-selector {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 15px;
+    padding: 5px 12px;
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.3s;
+    min-width: 120px;
+    justify-content: space-between;
+}
 
-/* CORREÇÃO DO CHAT CONTAINER PARA CELULAR */
-#float-chat-container{
-    flex: 1; /* Ocupa todo o espaço restante */
-    overflow-y: auto; /* Permite rolagem */
-    padding: 10px;
-    background: #0d1117;
-    scrollbar-width: thin;
-    scrollbar-color: var(--accent) #30363d;
-    min-height: 150px; /* Altura mínima garantida */
+.ai-selector:hover, .mode-selector:hover {
+    background: rgba(255,255,255,0.15);
+    transform: scale(1.02);
+}
+
+.ai-selector:active, .mode-selector:active {
+    transform: scale(0.98);
+}
+
+.ai-selector .ai-icon, .mode-selector .mode-icon {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.ai-selector .ai-name, .mode-selector .mode-name {
+    flex: 1;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ai-selector .ai-arrow, .mode-selector .mode-arrow {
+    font-size: 10px;
+    opacity: 0.7;
+}
+
+/* Dropdowns */
+.ai-dropdown, .mode-dropdown {
+    display: none;
+    position: absolute;
+    top: 50px;
+    background: rgba(40, 40, 42, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    z-index: 10001;
+    min-width: 200px;
+    max-width: 250px;
+    overflow: hidden;
+    animation: dropdownFade 0.2s ease;
+}
+
+.ai-dropdown { left: 10px; }
+.mode-dropdown { left: 170px; }
+
+@keyframes dropdownFade {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.ai-dropdown.show, .mode-dropdown.show {
+    display: block;
+}
+
+.ai-option, .mode-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.ai-option:last-child, .mode-option:last-child {
+    border-bottom: none;
+}
+
+.ai-option:hover, .mode-option:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.ai-option.selected, .mode-option.selected {
+    background: rgba(10, 132, 255, 0.2);
+    border-left: 3px solid #0a84ff;
+}
+
+.ai-option .option-icon, .mode-option .option-icon {
+    font-size: 16px;
+    width: 24px;
+    text-align: center;
+}
+
+.ai-option .option-name, .mode-option .option-name {
+    flex: 1;
+    font-weight: 500;
+}
+
+.ai-option .option-status {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.status-available { background: #30d158; color: white; }
+.status-warning { background: #ff9f0a; color: black; }
+.status-unavailable { background: #ff453a; color: white; }
+.status-offline { background: #8e8e93; color: white; }
+
+/* Badges para cada IA */
+.badge-gemini { background: #4285F4; color: white; }
+.badge-mistral { background: #6c47ff; color: white; }
+.badge-deepseek { background: #1a5fff; color: white; }
+.badge-groq { background: #f55325; color: white; }
+
+/* ================================================= */
+/* 2. CONFIGURAÇÕES GERAIS E CORREÇÕES               */
+/* ================================================= */
+.altbookname, .eng, .trans, .ref-eng, span[lang="en"], .splitactive, .splitinactive, .currentx { display: none !important; }
+.tag { display: none !important; }
+script, style { display: none !important; }
+
+:root {
+    --font-sz: 18px;
+    --bg: #000000;
+    --txt: #ffffff;
+    --header-bg: rgba(28,28,30,0.85);
+    --chat-bg: rgba(30,30,32,0.98);
+    --msg-ai: #2c2c2e;
+    --msg-user: #0a84ff;
+    --border: #38383a;
+    --input-bg: rgba(118,118,128,0.24);
+    --active-color: #0a84ff;
+    --primary: #1f6feb;
+    --accent: #f0883e;
+    --gemini: #4285F4;
+    --mistral: #6c47ff;
+    --deepseek: #1a5fff;
+    --groq: #f55325;
+    --warning: #ff6b35;
+}
+
+body {
+    margin: 0;
+    padding: 0 10px 60px 10px !important;
+    background-color: var(--bg);
+    color: var(--txt);
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    overflow-x: hidden;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    background-blend-mode: darken;
+    transition: background-image .5s ease;
+}
+
+#espaco-topo { width: 100%; height: 115px; display: block; transition: height 0.2s; }
+
+div:not(#header-ai *), p, span, li, button:not(#header-ai button), input {
+    font-size: var(--font-sz) !important;
+    line-height: 1.25 !important;
+    margin-bottom: 4px;
+}
+
+p, div, span, h1, h2, h3 { text-shadow: 0 1px 2px rgba(0,0,0,.8); }
+
+/* ================================================= */
+/* 3. CORES E MARCAÇÕES                              */
+/* ================================================= */
+h1, h2, h3 { color: #0a84ff !important; border-bottom: 1px solid var(--border); margin-top: 5px; }
+a { color: #0a84ff !important; text-decoration: none; }
+.verno { color: #0a84ff !important; font-weight: bold; }
+
+.add { font-style: italic; color: #aaaaaa; display: inline !important; }
+.wjc { color: #ff453a; display: inline !important; }
+.red { color: #ff453a !important; display: inline !important; }
+
+.orange { color: #e67e00 !important; }
+.brown { color: #ae5819 !important; }
+.green { color: #00a300 !important; }
+.blue { color: #4343fa !important; }
+.yellow { color: #cccc50 !important; }
+
+/* ================================================= */
+/* 4. CABEÇALHO E INTERFACE                          */
+/* ================================================= */
+#header-ai {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--header-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid rgba(255,255,255,.1);
+    z-index: 9000;
     display: flex;
     flex-direction: column;
+    padding: 6px 10px;
+    gap: 6px;
+    height: auto;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    transition: transform 0.2s;
 }
 
-#float-chat-container::-webkit-scrollbar{width:8px}#float-chat-container::-webkit-scrollbar-track{background:#30363d;border-radius:4px}#float-chat-container::-webkit-scrollbar-thumb{background:var(--accent);border-radius:4px}#float-chat-container::-webkit-scrollbar-thumb:hover{background:#f0b232}.float-message{margin-bottom:10px;padding:10px;border-radius:10px;font-size:14px;line-height:1.4;max-width:85%;word-wrap:break-word;animation:fadeIn .3s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.float-user-message{background:linear-gradient(135deg,#1e6fbb 0%,#0d4d9c 100%);color:white;margin-left:auto;border-bottom-right-radius:4px;border-bottom-left-radius:10px}.float-ai-message{background:#161b22;border:1px solid #30363d;color:var(--text-dark);border-bottom-left-radius:4px;border-bottom-right-radius:10px;overflow:hidden}.float-ai-message .message-header{font-weight:bold;margin-bottom:5px;color:var(--accent);display:flex;align-items:center;gap:5px;font-size:12px}.float-ai-message .message-content{max-height:none; /* Permite que cresça */ overflow-y:visible;padding-right:0;}.ai-badge{font-size:10px;padding:2px 6px;border-radius:8px;margin-left:5px;font-weight:bold}.gemini-badge{background:#1c3f8a;color:#4285F4;border:1px solid #2a4a9c}.mistral-badge{background:#3a2a6c;color:#6c47ff;border:1px solid #4a3a7c}.deepseek-badge{background:#1a3a7a;color:#1a5fff;border:1px solid #2a4a8a}.groq-badge{background:#9a2c1a;color:#f55325;border:1px solid #aa3c2a}.window-controls{display:flex;gap:5px}.window-control-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white;width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;transition:all .2s}.window-control-btn:hover{background:rgba(255,255,255,.25)}#mysword-float-window.minimized{height:auto!important;max-height:60px!important}#mysword-float-window.minimized .float-window-content{display:none}#mysword-float-window.maximized{width:90vw!important;height:90vh!important;max-width:90vw!important;max-height:90vh!important;bottom:5vh!important;right:5vw!important}#mysword-float-window.fullscreen{width:100vw!important;height:100vh!important;max-width:100vw!important;max-height:100vh!important;bottom:0!important;right:0!important;border-radius:0!important;border:none!important}#model-selector{display:flex;justify-content:center;gap:5px;margin:8px 12px;padding:8px;background:#161b22;border-radius:10px;border:1px solid #30363d}.model-btn{flex:1;padding:6px;font-size:12px;border:none;border-radius:6px;background:#21262d;color:var(--text-dark);cursor:pointer;transition:all .2s;font-weight:500}.model-btn:hover{background:#30363d}.model-btn.active{background:var(--accent);color:#000;font-weight:bold}
+.ico { width: 16px; height: 16px; fill: currentColor; display: inline-block; vertical-align: middle; }
 
-/* MEDIA QUERIES - CELULAR ESPECÍFICO */
-@media (max-width:768px){#mysword-float-window{width:350px;right:15px;bottom:90px}#mysword-float-btn{bottom:20px;right:20px;width:55px;height:55px;font-size:24px}}
-
-/* FIX CRÍTICO PARA CELULARES E TECLADO */
-@media (max-width:480px){
-    #mysword-float-window{
-        width:96vw;
-        right:2vw;
-        left:2vw;
-        bottom:10px; /* Mais próximo do fundo */
-        height: 65vh; /* Altura fixa para garantir espaço */
-        max-height: 70vh;
-        display: flex;
-        flex-direction: column;
-    }
-    .float-window-content {
-        flex: 1;
-        overflow: hidden;
-    }
-    #float-chat-container {
-        flex: 1;
-        min-height: 0; /* Permite encolher se necessário */
-    }
-    #mysword-float-btn{bottom:15px;right:15px;width:50px;height:50px}
-    .float-quick-actions{gap:4px;padding:0 8px 8px 8px}
-    .float-quick-btn{padding:6px 8px;min-width:70px;min-height:45px}
-    .float-quick-btn .btn-emoji{font-size:14px}
-    .float-quick-btn .btn-text{font-size:9px}
-    #model-selector{flex-wrap:wrap}
-    .model-btn{flex:initial;width:48%}
+.top-row { 
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
 }
 
-/* Light Mode Styles */
-body.light-mode .verse{background:#f6f8fa}
-body.light-mode .verse:hover{background:#dde7ff}
-body.light-mode .verse.selected{background:#dcffe4}
-body.light-mode .copy-btn{background:#f6f8fa;border-color:#d0d7de;color:#1f2328}
-body.light-mode .copy-btn:hover{background:#eaeef2}
-body.light-mode .modal-content{background:#ffffff}
-body.light-mode .btn-secondary{background:#f6f8fa;color:#1f2328;border-color:#d0d7de}
-body.light-mode .btn-secondary:hover{background:#eaeef2}
-body.light-mode .modal-input,.light-mode .modal-textarea{background:#ffffff;border-color:#d0d7de;color:#1f2328}
-body.light-mode .modal-text{color:#656d76}
-body.light-mode .profile-example{background:#f6f8fa}
-body.light-mode .api-option{background:#f6f8fa;border-color:#d0d7de}
-body.light-mode .api-option h4{color:#1f2328}
-body.light-mode .api-option .model-name{color:#656d76}
-body.light-mode .api-option:hover{border-color:#1f6feb}
-body.light-mode .api-option.selected{background:#eaeef2}
-body.light-mode .key-item{background:#f6f8fa;border-color:#d0d7de}
-body.light-mode .key-item .key-preview{color:#1f2328}
-body.light-mode .gemini-badge{background:#e8f0fe;color:#1a73e8;border-color:#d2e3fc}
-body.light-mode .mistral-badge{background:#f0e7ff;color:#6c47ff;border-color:#e0d7ff}
-body.light-mode .deepseek-badge{background:#e6f0ff;color:#1a5fff;border-color:#d6e0ff}
-body.light-mode .groq-badge{background:#fee2e2;color:#dc2626;border-color:#fecaca}
-body.light-mode #mysword-float-window{background:#ffffff}
-body.light-mode .float-controls{background:#f6f8fa;border-color:#d0d7de}
-body.light-mode .float-btn{background:#ffffff;border-color:#d0d7de;color:#656d76}
-body.light-mode .float-btn:hover{background:#1f6feb;border-color:#1f6feb;color:white}
-body.light-mode .float-input-wrapper{background:#ffffff;border-color:#d0d7de}
-body.light-mode #float-user-input{color:#1f2328}
-body.light-mode .float-quick-actions{background:#f6f8fa}
-body.light-mode .float-quick-btn{background:#ffffff;border-color:#d0d7de;color:#656d76}
-body.light-mode .float-quick-btn:hover{background:#eaeef2}
-body.light-mode .float-quick-btn.selected{background:#1f6feb;border-color:#1f6feb;color:white}
-body.light-mode #float-chat-container{background:#ffffff}
-body.light-mode .float-ai-message{background:#f6f8fa;border-color:#d0d7de;color:#1f2328}
-body.light-mode .model-btn{background:#ffffff;color:#656d76}
-body.light-mode .model-btn:hover{background:#eaeef2}
-body.light-mode #model-selector{background:#f6f8fa;border-color:#d0d7de}
-body.light-mode .window-control-btn{background:rgba(0,0,0,.1);border-color:rgba(0,0,0,.2);color:#1f2328}
-body.light-mode .window-control-btn:hover{background:rgba(0,0,0,.2)}
-body.light-mode .float-quick-actions::-webkit-scrollbar-track{background:#d0d7de}
-body.light-mode .float-quick-actions::-webkit-scrollbar-thumb{background:#1f6feb}
-body.light-mode .float-quick-actions::-webkit-scrollbar-thumb:hover{background:#1a7ff0}
-body.light-mode #float-chat-container::-webkit-scrollbar-track{background:#d0d7de}
-body.light-mode #float-chat-container::-webkit-scrollbar-thumb{background:#1f6feb}
-body.light-mode #float-chat-container::-webkit-scrollbar-thumb:hover{background:#1a7ff0}
-body.light-mode .float-ai-message .message-content::-webkit-scrollbar-track{background:#d0d7de}
-body.light-mode .float-ai-message .message-content::-webkit-scrollbar-thumb{background:#1f6feb}
-body.light-mode .float-ai-message .message-content::-webkit-scrollbar-thumb:hover{background:#1a7ff0}
+.top-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.top-controls { 
+    display: flex; 
+    gap: 8px; 
+    align-items: center; 
+    margin-left: auto;
+}
+.btn-top {
+    background: rgba(255,255,255,.1);
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: transform .1s;
+}
+.btn-top:active { background: rgba(255,255,255,.3); transform: scale(.95); }
+
+.row-main { display: flex; width: 100%; gap: 8px; align-items: center; }
+.input-wrapper { flex: 1; display: flex; align-items: center; background: var(--input-bg); border-radius: 8px; padding: 0 8px; height: 32px; }
+.input-ai { flex: 1; height: 100%; border: none; background: 0 0; color: #fff; outline: none; font-size: 15px !important; }
+.btn-send { width: 32px; height: 32px; border: none; background: #0a84ff; color: #fff; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+/* ================================================= */
+/* 5. JANELA DE CHAT                                 */
+/* ================================================= */
+#janela-chat {
+    display: none;
+    position: fixed;
+    top: 120px;
+    left: 10px;
+    right: 10px;
+    bottom: 20px;
+    background: var(--chat-bg);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,.15);
+    box-shadow: 0 20px 50px rgba(0,0,0,.6);
+    z-index: 9999;
+    flex-direction: column;
+    animation: slideUp .3s cubic-bezier(.2,.8,.2,1);
+}
+.btn-close-ios {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    background: rgba(60,60,67,.6);
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10001;
+    backdrop-filter: blur(10px);
+}
+.btn-close-ios svg { width: 12px; height: 12px; fill: #ebebf5; }
+@keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+#chat-content { flex: 1; overflow-y: auto; padding: 15px; margin-top: 5px; }
+.msg {
+    padding: 10px 14px;
+    border-radius: 16px;
+    margin-bottom: 10px;
+    display: block;
+    font-size: 15px !important;
+    max-width: 92%;
+    color: #fff !important;
+    line-height: 1.4;
+}
+.msg-user { background: #0a84ff; text-align: right; margin-left: auto; border-bottom-right-radius: 4px; }
+.msg-ai { background: #2c2c2e; text-align: left; margin-right: auto; border-bottom-left-radius: 4px; border: 1px solid rgba(255,255,255,.05); }
+.btn-copy {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    background: #30d158;
+    color: #fff !important;
+    border: none;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 14px !important;
+}
+#area-notas {
+    flex: 1;
+    width: 100%;
+    background: rgba(0,0,0,0.2);
+    color: #fff !important;
+    font-size: 17px;
+    padding: 12px;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 14px;
+    resize: none;
+    outline: none;
+    font-family: sans-serif;
+}
+
+/* ================================================= */
+/* 6. MODAL DE CONFIGURAÇÃO DA API                   */
+/* ================================================= */
+.modal-ios {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,.9);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.modal-content-ios {
+    background: #1c1c1e;
+    border-radius: 20px;
+    padding: 20px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 1px solid rgba(255,255,255,.1);
+    color: white;
+}
+.modal-header-ios {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.modal-header-ios h3 { color: var(--accent); margin: 0; border: none; }
+.close-btn-ios {
+    background: none;
+    border: none;
+    color: #8b949e;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 0;
+}
+.api-option-ios {
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border: 2px solid #333;
+    background: #2c2c2e;
+    cursor: pointer;
+    transition: all .3s;
+}
+.api-option-ios.selected {
+    border-color: var(--accent);
+    background: #3a3a3c;
+}
+.api-option-ios.gemini { border-left: 4px solid var(--gemini); }
+.api-option-ios.mistral { border-left: 4px solid var(--mistral); }
+.api-option-ios.deepseek { border-left: 4px solid var(--deepseek); }
+.api-option-ios.groq { border-left: 4px solid var(--groq); }
+.modal-input-ios {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background: #1c1c1e;
+    color: white;
+    font-size: 14px;
+}
+.modal-btn-ios {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: var(--primary);
+    color: white;
+    font-weight: bold;
+    margin-top: 10px;
+    cursor: pointer;
+}
+.modal-btn-ios.secondary { background: #444; }
+.modal-btn-ios.accent { background: var(--accent); color: #000; }
+.modal-btn-ios.warning { background: var(--warning); color: white; }
+.key-item-ios {
+    background: #2c2c2e;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 5px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.key-status { font-size: 12px; padding: 3px 8px; border-radius: 10px; font-weight: bold; }
+.status-valid { background: #238636; color: white; }
+.status-invalid { background: #da3633; color: white; }
+.status-warning { background: #ff6b35; color: white; }
+.status-offline { background: #8e8e93; color: white; }
+.auto-config-results {
+    background: #2c2c2e;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px 0;
+    border-left: 4px solid var(--accent);
+}
+.auto-config-title {
+    color: var(--accent);
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+.quota-warning {
+    background: rgba(255, 107, 53, 0.1);
+    border: 1px solid var(--warning);
+    border-radius: 10px;
+    padding: 12px;
+    margin: 15px 0;
+    color: #ff9c7c;
+}
+.quota-warning h4 {
+    color: var(--warning);
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.api-recommendation {
+    background: rgba(26, 95, 255, 0.1);
+    border: 1px solid var(--deepseek);
+    border-radius: 10px;
+    padding: 12px;
+    margin: 15px 0;
+}
+.api-recommendation h4 {
+    color: var(--deepseek);
+    margin: 0 0 8px 0;
+    font-size: 14px;
+}
+
+/* ================================================= */
+/* 7. LOADING ANIMATION                              */
+/* ================================================= */
+.loading-ios {
+    display: inline-flex;
+    gap: 5px;
+    padding: 15px;
+}
+.loading-ios span {
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out;
+}
+.loading-ios span:nth-child(1) { animation-delay: -.32s; }
+.loading-ios span:nth-child(2) { animation-delay: -.16s; }
+@keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+}
+
+/* ================================================= */
+/* 8. SELEÇÃO DE VERSÍCULOS                          */
+/* ================================================= */
+.verse-selected {
+    background: rgba(10, 132, 255, 0.3) !important;
+    border: 1px solid #0a84ff !important;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+/* ================================================= */
+/* 9. BADGES DE STATUS                               */
+/* ================================================= */
+.badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: bold;
+    margin-left: 6px;
+}
+.badge-success { background: #238636; color: white; }
+.badge-warning { background: #ff6b35; color: white; }
+.badge-error { background: #da3633; color: white; }
+.badge-info { background: #1a5fff; color: white; }
 </style>
 </head>
-
 <body>
 
-<div id="api-modal" class="modal">
-<div class="modal-content">
-<div class="modal-header">
-<h3>🔑 Gerenciar Chaves de IA</h3>
-<button class="close-btn" onclick="hideApiModal()">×</button>
-</div>
-<div class="api-selector">
-<div class="api-option gemini selected" onclick="selectApiProvider('gemini')">
-<h4>✨ Gemini (Google)</h4>
-<span class="model-name">gemini-2.5-flash</span>
-<span class="free-badge">GRÁTIS • 60 req/min</span>
-</div>
-<div class="api-option mistral" onclick="selectApiProvider('mistral')">
-<h4>🌪️ Mistral AI</h4>
-<span class="model-name">mistral-7b / mixtral-8x7b</span>
-<span class="free-badge">GRÁTIS • Open-source</span>
-</div>
-<div class="api-option deepseek" onclick="selectApiProvider('deepseek')">
-<h4>🧠 DeepSeek</h4>
-<span class="model-name">deepseek-chat / deepseek-coder</span>
-<span class="free-badge">GRÁTIS • Open-source</span>
-</div>
-<div class="api-option groq" onclick="selectApiProvider('groq')">
-<h4>🦙 Llama 3 (Groq)</h4>
-<span class="model-name">llama-3.1-8b</span>
-<span class="free-badge">GRÁTIS • rápido</span>
-</div>
+<div id="espaco-topo"></div>
+
+<!-- HEADER PRINCIPAL -->
+<div id="header-ai" onclick="event.stopPropagation()">
+    <div class="top-row">
+        <div class="top-left">
+            <div class="perfil-area" title="Seu Perfil" onclick="event.stopPropagation()"></div>
+            
+            <!-- SELETOR DE IA -->
+            <div class="ai-selector-container">
+                <div class="ai-selector" onclick="toggleAIDropdown(event)" id="ai-selector">
+                    <div class="ai-icon" id="ai-current-icon">✨</div>
+                    <div class="ai-name" id="ai-current-name">Gemini</div>
+                    <div class="ai-arrow">▼</div>
+                </div>
+                
+                <!-- DROPDOWN DE SELEÇÃO DE IA -->
+                <div class="ai-dropdown" id="ai-dropdown">
+                    <div class="ai-option" onclick="selectAI('gemini')" id="ai-option-gemini">
+                        <div class="option-icon">✨</div>
+                        <div class="option-name">Gemini</div>
+                        <div class="option-status status-warning" id="ai-status-gemini">BAIXA COTA</div>
+                    </div>
+                    <div class="ai-option" onclick="selectAI('mistral')" id="ai-option-mistral">
+                        <div class="option-icon">🌪️</div>
+                        <div class="option-name">Mistral</div>
+                        <div class="option-status status-available" id="ai-status-mistral">20/MIN</div>
+                    </div>
+                    <div class="ai-option" onclick="selectAI('deepseek')" id="ai-option-deepseek">
+                        <div class="option-icon">🧠</div>
+                        <div class="option-name">DeepSeek</div>
+                        <div class="option-status status-available" id="ai-status-deepseek">ILIMITADO</div>
+                    </div>
+                    <div class="ai-option" onclick="selectAI('groq')" id="ai-option-groq">
+                        <div class="option-icon">🦙</div>
+                        <div class="option-name">Llama (Groq)</div>
+                        <div class="option-status status-available" id="ai-status-groq">500/DIA</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SELETOR DE MODO -->
+            <div class="mode-selector-container">
+                <div class="mode-selector" onclick="toggleModeDropdown(event)" id="mode-selector">
+                    <div class="mode-icon" id="mode-current-icon">👁️</div>
+                    <div class="mode-name" id="mode-current-name">Visão Geral</div>
+                    <div class="mode-arrow">▼</div>
+                </div>
+                
+                <!-- DROPDOWN DE SELEÇÃO DE MODO -->
+                <div class="mode-dropdown" id="mode-dropdown">
+                    <div class="mode-option" onclick="selectMode('visao')" id="mode-option-visao">
+                        <div class="option-icon">👁️</div>
+                        <div class="option-name">Visão Geral</div>
+                    </div>
+                    <div class="mode-option" onclick="selectMode('esboco')" id="mode-option-esboco">
+                        <div class="option-icon">📝</div>
+                        <div class="option-name">Esboço</div>
+                    </div>
+                    <div class="mode-option" onclick="selectMode('dicionario')" id="mode-option-dicionario">
+                        <div class="option-icon">📚</div>
+                        <div class="option-name">Dicionário</div>
+                    </div>
+                    <div class="mode-option" onclick="selectMode('exegese')" id="mode-option-exegese">
+                        <div class="option-icon">🔬</div>
+                        <div class="option-name">Exegese</div>
+                    </div>
+                    <div class="mode-option" onclick="selectMode('aplicacao')" id="mode-option-aplicacao">
+                        <div class="option-icon">💡</div>
+                        <div class="option-name">Aplicação</div>
+                    </div>
+                    <div class="mode-option" onclick="selectMode('contexto')" id="mode-option-contexto">
+                        <div class="option-icon">🏛️</div>
+                        <div class="option-name">Contexto Histórico</div>
+                    </div>
+                    <div class="mode-option" onclick="selectMode('thompson')" id="mode-option-thompson">
+                        <div class="option-icon">⛓️</div>
+                        <div class="option-name">Thompson</div>
+                    </div>
+                    <div class="mode-option" onclick="selectMode('personagem')" id="mode-option-personagem">
+                        <div class="option-icon">👤</div>
+                        <div class="option-name">Personagens</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="top-controls">
+            <button class="btn-top" onclick="showApiModal(); event.stopPropagation()" title="Configurar IA">🔧</button>
+            <button class="btn-top" onclick="abrirNotas(); event.stopPropagation()" title="Notas & Telegraph">📝</button>
+            <button class="btn-top" onclick="mudarFonte(-1); event.stopPropagation()">A-</button>
+            <button class="btn-top" onclick="mudarFonte(1); event.stopPropagation()">A+</button>
+        </div>
+    </div>
+    
+    <div class="row-main">
+        <div class="input-wrapper" onclick="event.stopPropagation()">
+            <svg class="ico" viewBox="0 0 24 24" style="color:#8e8e93;margin-right:5px">
+                <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+            <input type="text" id="prompt-input" class="input-ai" placeholder="Pergunte sobre teologia assembleiana..." 
+                   onkeydown="if(event.key==='Enter')enviar(); event.stopPropagation()" 
+                   onclick="event.stopPropagation()">
+        </div>
+        <button class="btn-send" onclick="enviar(); event.stopPropagation()">➤</button>
+    </div>
 </div>
 
-<div id="gemini-config">
-<p class="modal-text">
-<strong>1.</strong> Acesse: <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a><br>
-<strong>2.</strong> Faça login com Google<br>
-<strong>3.</strong> Clique em "Create API Key"<br>
-<strong>4.</strong> Cole abaixo:
-</p>
-<div class="key-grid">
-<input type="password" id="gemini-key" class="modal-input key-input" placeholder="Cole sua chave Gemini (AIzaSy...)">
-<button class="key-btn btn-gemini" onclick="testApiKey('gemini')">✓ Testar</button>
-</div>
+<!-- JANELA DE CHAT -->
+<div id="janela-chat" onclick="event.stopPropagation()">
+    <button class="btn-close-ios" onclick="fechar('janela-chat'); event.stopPropagation()" title="Fechar">✕</button>
+    <div id="chat-content"></div>
 </div>
 
-<div id="mistral-config" style="display:none">
-<p class="modal-text">
-<strong>1.</strong> Acesse: <a href="https://console.mistral.ai/api-keys/" target="_blank">Mistral AI Platform</a><br>
-<strong>2.</strong> Crie conta gratuita<br>
-<strong>3.</strong> Gere sua chave API<br>
-<strong>4.</strong> Cole abaixo:
-</p>
-<div class="key-grid">
-<input type="password" id="mistral-key" class="modal-input key-input" placeholder="Cole sua chave Mistral">
-<button class="key-btn btn-mistral" onclick="testApiKey('mistral')">✓ Testar</button>
-</div>
-</div>
-
-<div id="deepseek-config" style="display:none">
-<p class="modal-text">
-<strong>1.</strong> Acesse: <a href="https://platform.deepseek.com/api_keys" target="_blank">DeepSeek Platform</a><br>
-<strong>2.</strong> Crie conta gratuita<br>
-<strong>3.</strong> Gere sua chave API<br>
-<strong>4.</strong> Cole abaixo:
-</p>
-<div class="key-grid">
-<input type="password" id="deepseek-key" class="modal-input key-input" placeholder="Cole sua chave DeepSeek">
-<button class="key-btn btn-deepseek" onclick="testApiKey('deepseek')">✓ Testar</button>
-</div>
-</div>
-
-<div id="groq-config" style="display:none">
-<p class="modal-text">
-<strong>1.</strong> Acesse: <a href="https://console.groq.com/keys" target="_blank">Groq Console</a><br>
-<strong>2.</strong> Crie conta gratuita<br>
-<strong>3.</strong> Copie sua chave<br>
-<strong>4.</strong> Cole abaixo:
-</p>
-<div class="key-grid">
-<input type="password" id="groq-key" class="modal-input key-input" placeholder="Cole sua chave Groq (gsk_...)">
-<button class="key-btn btn-groq" onclick="testApiKey('groq')">✓ Testar</button>
-</div>
-</div>
-
-<div style="margin:20px 0">
-<div class="modal-label">Chaves Salvas:</div>
-<div id="saved-keys-container">
-<div class="key-item">
-<span>Nenhuma chave configurada ainda</span>
-</div>
-</div>
-</div>
-
-<div style="margin:20px 0">
-<div class="modal-label">Resultado do Auto Config:</div>
-<div id="auto-config-results">
-</div>
-</div>
-
-<div class="modal-buttons">
-<button class="modal-btn btn-secondary" onclick="hideApiModal()">Fechar</button>
-<button class="modal-btn btn-primary" onclick="saveAllApiKeys()">💾 Salvar Todas</button>
-<button class="modal-btn btn-primary" onclick="autoConfigAll()">🤖 AUTO CONFIG</button>
-</div>
-
-<p style="color:#8b949e;font-size:11px;margin-top:15px;text-align:center">
-⚠️ Suas chaves ficam armazenadas apenas neste navegador (localStorage).<br>
-Nunca são enviadas para servidores externos.
-</p>
-</div>
-</div>
-
-<div id="mysword-float-btn" onclick="toggleFloatWindow()">⚔️</div>
-<div id="mysword-float-window">
-<div class="float-window-header">
-<div class="logo-text">My<span>Sword</span> AI</div>
-<div class="window-controls">
-<button class="window-control-btn" id="minimize-btn" title="Minimizar" onclick="minimizeWindow()">─</button>
-<button class="window-control-btn" id="maximize-btn" title="Maximizar" onclick="maximizeWindow()">□</button>
-<button class="window-control-btn" id="fullscreen-btn" title="Tela Cheia" onclick="toggleFullscreen()">⛶</button>
-<button class="window-control-btn" id="close-float-btn" title="Fechar" onclick="toggleFloatWindow()">×</button>
-</div>
-</div>
-
-<div class="float-window-content">
-<div id="model-selector">
-<button class="model-btn active gemini-btn" onclick="setActiveModel('gemini')">✨ Gemini</button>
-<button class="model-btn mistral-btn" onclick="setActiveModel('mistral')">🌪️ Mistral</button>
-<button class="model-btn deepseek-btn" onclick="setActiveModel('deepseek')">🧠 DeepSeek</button>
-<button class="model-btn groq-btn" onclick="setActiveModel('groq')">🦙 Llama</button>
-</div>
-
-<div class="float-controls">
-<button class="float-btn" onclick="toggleTheme()" title="Alternar Tema">🌓</button>
-<button class="float-btn" onclick="showApiModal()" title="Configurar API Keys">🔑</button>
-<button class="float-btn" onclick="clearFloatChat()" title="Limpar Chat">🗑️</button>
-</div>
-
-<div class="float-input-area">
-<div class="float-input-wrapper">
-<div class="prompt-indicator" id="prompt-indicator"></div>
-<span style="color: #8b949e; margin-right: 8px;">🔍</span>
-<input type="text" id="float-user-input" placeholder="Pergunte sobre teologia assembleiana..."
-onkeydown="if(event.key === 'Enter' || event.keyCode === 13) sendFloatMessage()">
-</div>
-<button id="float-send-btn" onclick="sendFloatMessage()">➤</button>
-</div>
-
-<div class="float-quick-actions">
-<button class="float-quick-btn" onclick="selectFloatPrompt('visao')">
-<span class="btn-emoji">👁️</span>
-<span class="btn-text">Visão Geral</span>
-</button>
-<button class="float-quick-btn" onclick="selectFloatPrompt('esboco')">
-<span class="btn-emoji">📝</span>
-<span class="btn-text">Esboço</span>
-</button>
-<button class="float-quick-btn" onclick="selectFloatPrompt('exegese')">
-<span class="btn-emoji">🔬</span>
-<span class="btn-text">Exegese</span>
-</button>
-<button class="float-quick-btn" onclick="selectFloatPrompt('aplicacao')">
-<span class="btn-emoji">💡</span>
-<span class="btn-text">Aplicação</span>
-</button>
-<button class="float-quick-btn" onclick="selectFloatPrompt('contexto')">
-<span class="btn-emoji">🏛️</span>
-<span class="btn-text">Contexto Histórico</span>
-</button>
-<button class="float-quick-btn" onclick="selectFloatPrompt('thompson')">
-<span class="btn-emoji">📖</span>
-<span class="btn-text">Thompson</span>
-</button>
-</div>
-
-<div id="float-chat-container"></div>
-</div>
+<!-- MODAL DE CONFIGURAÇÃO DA API -->
+<div id="api-modal-ios" class="modal-ios" onclick="if(event.target===this) hideApiModal();">
+    <div class="modal-content-ios" onclick="event.stopPropagation()">
+        <div class="modal-header-ios">
+            <h3>🔑 Configurar Chaves de IA</h3>
+            <button class="close-btn-ios" onclick="hideApiModal()">×</button>
+        </div>
+        
+        <div class="quota-warning">
+            <h4>⚠️ ATENÇÃO: Limites de Cota</h4>
+            <p style="font-size: 12px; margin: 0; color: #ff9c7c;">
+                • <strong>Gemini:</strong> 20 req/dia (cota muito baixa)<br>
+                • <strong>Mistral:</strong> 20 req/min (melhor opção)<br>
+                • <strong>DeepSeek:</strong> Sem limites claros (recomendado)<br>
+                • <strong>Groq:</strong> ~500 req/dia (boa alternativa)
+            </p>
+        </div>
+        
+        <div class="api-recommendation">
+            <h4>✅ RECOMENDAÇÃO</h4>
+            <p style="font-size: 12px; margin: 0; color: #a3c7ff;">
+                Configure pelo menos 2 APIs diferentes para evitar bloqueios.<br>
+                O sistema usará automaticamente APIs alternativas quando uma falhar.
+            </p>
+        </div>
+        
+        <div id="api-selector-ios">
+            <div class="api-option-ios gemini selected" onclick="selectApiProvider('gemini')">
+                <h4 style="margin: 0 0 5px 0; color: white;">✨ Gemini (Google) <span class="badge badge-warning">COTA BAIXA</span></h4>
+                <span style="color: #aaa; font-size: 12px;">gemini-1.5-flash-latest</span>
+                <span style="background: #ff6b35; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; display: inline-block; margin-top: 5px;">APENAS 20 REQ/DIA</span>
+            </div>
+            
+            <div class="api-option-ios mistral" onclick="selectApiProvider('mistral')">
+                <h4 style="margin: 0 0 5px 0; color: white;">🌪️ Mistral AI <span class="badge badge-success">RECOMENDADO</span></h4>
+                <span style="color: #aaa; font-size: 12px;">mistral-small-latest</span>
+                <span style="background: #238636; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; display: inline-block; margin-top: 5px;">20 REQ/MIN • ESTÁVEL</span>
+            </div>
+            
+            <div class="api-option-ios deepseek" onclick="selectApiProvider('deepseek')">
+                <h4 style="margin: 0 0 5px 0; color: white;">🧠 DeepSeek <span class="badge badge-success">MELHOR OPÇÃO</span></h4>
+                <span style="color: #aaa; font-size: 12px;">deepseek-chat</span>
+                <span style="background: #238636; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; display: inline-block; margin-top: 5px;">SEM LIMITES • GRATUITO</span>
+            </div>
+            
+            <div class="api-option-ios groq" onclick="selectApiProvider('groq')">
+                <h4 style="margin: 0 0 5px 0; color: white;">🦙 Llama 3 (Groq) <span class="badge badge-info">RÁPIDO</span></h4>
+                <span style="color: #aaa; font-size: 12px;">llama-3.1-8b-instant</span>
+                <span style="background: #1a5fff; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; display: inline-block; margin-top: 5px;">~500 REQ/DIA • VELOCIDADE</span>
+            </div>
+        </div>
+        
+        <div id="gemini-config-ios" style="margin-top: 20px;">
+            <p style="color: #aaa; font-size: 13px; margin-bottom: 10px;">
+                <strong>⚠️ Cota Muito Baixa:</strong> Apenas 20 requisições por dia<br>
+                <strong>1.</strong> Acesse: <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #1f6feb;">Google AI Studio</a><br>
+                <strong>2.</strong> Faça login com Google<br>
+                <strong>3.</strong> Clique em "Create API Key"<br>
+                <strong>4.</strong> Cole abaixo:
+            </p>
+            <input type="password" id="gemini-key-ios" class="modal-input-ios" placeholder="Cole sua chave Gemini (AIzaSy...)" 
+                   value="">
+            <button class="modal-btn-ios warning" onclick="testApiKey('gemini')">⚠️ Testar Chave Gemini</button>
+        </div>
+        
+        <div id="mistral-config-ios" style="display: none; margin-top: 20px;">
+            <p style="color: #aaa; font-size: 13px; margin-bottom: 10px;">
+                <strong>✅ Boa Opção:</strong> 20 requisições por minuto<br>
+                <strong>1.</strong> Acesse: <a href="https://console.mistral.ai/api-keys/" target="_blank" style="color: #1f6feb;">Mistral AI Platform</a><br>
+                <strong>2.</strong> Crie conta gratuita<br>
+                <strong>3.</strong> Gere sua chave API<br>
+                <strong>4.</strong> Cole abaixo:
+            </p>
+            <input type="password" id="mistral-key-ios" class="modal-input-ios" placeholder="Cole sua chave Mistral">
+            <button class="modal-btn-ios" onclick="testApiKey('mistral')" style="background: #6c47ff;">✅ Testar Chave Mistral</button>
+        </div>
+        
+        <div id="deepseek-config-ios" style="display: none; margin-top: 20px;">
+            <p style="color: #aaa; font-size: 13px; margin-bottom: 10px;">
+                <strong>🚀 Melhor Opção:</strong> Sem limites claros de cota<br>
+                <strong>1.</strong> Acesse: <a href="https://platform.deepseek.com/api_keys" target="_blank" style="color: #1f6feb;">DeepSeek Platform</a><br>
+                <strong>2.</strong> Crie conta gratuita<br>
+                <strong>3.</quad> Gere sua chave API<br>
+                <strong>4.</strong> Cole abaixo:
+            </p>
+            <input type="password" id="deepseek-key-ios" class="modal-input-ios" placeholder="Cole sua chave DeepSeek">
+            <button class="modal-btn-ios" onclick="testApiKey('deepseek')" style="background: #1a5fff;">🚀 Testar Chave DeepSeek</button>
+        </div>
+        
+        <div id="groq-config-ios" style="display: none; margin-top: 20px;">
+            <p style="color: #aaa; font-size: 13px; margin-bottom: 10px;">
+                <strong>⚡ Rápido:</strong> ~500 requisições por dia<br>
+                <strong>1.</strong> Acesse: <a href="https://console.groq.com/keys" target="_blank" style="color: #1f6feb;">Groq Console</a><br>
+                <strong>2.</strong> Crie conta gratuita<br>
+                <strong>3.</strong> Copie sua chave<br>
+                <strong>4.</strong> Cole abaixo:
+            </p>
+            <input type="password" id="groq-key-ios" class="modal-input-ios" placeholder="Cole sua chave Groq (gsk_...)">
+            <button class="modal-btn-ios" onclick="testApiKey('groq')" style="background: #f55325;">⚡ Testar Chave Groq</button>
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <div style="color: #f0883e; font-weight: bold; margin-bottom: 10px;">Chaves Salvas:</div>
+            <div id="saved-keys-container-ios"></div>
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <div class="auto-config-title">🤖 AUTO CONFIG - Resultados:</div>
+            <div id="auto-config-results-ios" class="auto-config-results">
+                <div style="color: #aaa; font-size: 13px; text-align: center;">
+                    Clique em "AUTO CONFIG" para testar automaticamente todas as chaves
+                </div>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="modal-btn-ios secondary" onclick="hideApiModal()">Fechar</button>
+            <button class="modal-btn-ios" onclick="saveAllApiKeys()">💾 Salvar Todas</button>
+            <button class="modal-btn-ios accent" onclick="autoConfigAll()">🤖 AUTO CONFIG</button>
+        </div>
+        
+        <div style="margin-top: 20px; text-align: center;">
+            <button class="modal-btn-ios warning" onclick="getFreeApiKeys()" style="font-size: 12px; padding: 10px;">
+                🔑 Obter Chaves Gratuitas Automaticamente
+            </button>
+        </div>
+        
+        <p style="color: #888; font-size: 11px; margin-top: 20px; text-align: center;">
+            ⚠️ Suas chaves ficam armazenadas apenas neste navegador (localStorage).<br>
+            Nunca são enviadas para servidores externos.
+        </p>
+    </div>
 </div>
 
 <script>
-// CONFIGURAÇÕES
+// ============================================================================
+// CONFIGURAÇÕES E VARIÁVEIS GLOBAIS
+// ============================================================================
 let apiKeys = {
-gemini: '',
-mistral: '',
-deepseek: '',
-groq: ''
+    gemini: '',
+    mistral: '',
+    deepseek: '',
+    groq: ''
 };
-let activeModel = 'gemini';
-let floatChatHistory = [];
-let isPrivateMode = false;
-let floatWindowOpen = false;
-let selectedPrompt = '';
-let apiProvider = 'gemini';
-let isMinimized = false;
-let isMaximized = false;
-let isFullscreen = false;
 
-// MODELOS DESCOBERTOS
 let discoveredModels = {
-gemini: '',
-mistral: '',
-deepseek: '',
-groq: ''
+    gemini: '',
+    mistral: '',
+    deepseek: '',
+    groq: ''
+};
+
+let activeModel = 'gemini';
+let modoAtual = 'visao';
+let chatHistory = [];
+let apiProvider = 'gemini';
+let perfil_usuario = 'Pentecostal Clássico';
+let tamFonte = 18;
+
+// Sistema de fallback automático
+let apiFallbackOrder = ['deepseek', 'mistral', 'groq', 'gemini']; // Ordem de preferência
+let apiQuotaStatus = {
+    gemini: { available: true, lastError: null, retryAfter: null },
+    mistral: { available: true, lastError: null, retryAfter: null },
+    deepseek: { available: true, lastError: null, retryAfter: null },
+    groq: { available: true, lastError: null, retryAfter: null }
+};
+
+// Mapeamento de nomes e ícones
+const aiConfig = {
+    gemini: { name: 'Gemini', icon: '✨', color: '#4285F4' },
+    mistral: { name: 'Mistral', icon: '🌪️', color: '#6c47ff' },
+    deepseek: { name: 'DeepSeek', icon: '🧠', color: '#1a5fff' },
+    groq: { name: 'Llama', icon: '🦙', color: '#f55325' }
 };
 
 // MODELOS PADRÃO
 const defaultModels = {
-gemini: 'gemini-1.5-flash-latest',
-mistral: 'mistral-small-latest',
-deepseek: 'deepseek-chat',
-groq: 'llama-3.1-8b-instant'
+    gemini: 'gemini-1.5-flash-latest',
+    mistral: 'mistral-small-latest',
+    deepseek: 'deepseek-chat',
+    groq: 'llama-3.1-8b-instant'
 };
 
-// PERFIL TEOLÓGICO ASSEMBLEIANO PADRÃO
-const defaultProfile = `Você é um assistente teológico especializado na doutrina das Assembleias de Deus no Brasil, com base nos autores e comentaristas publicados pela CPAD (Casa Publicadora das Assembleias de Deus).
+// ============================================================================
+// PERFIL TEOLÓGICO ASSEMBLEIANO COM SISTEMA DE BUSCA INTELIGENTE
+// ============================================================================
+const defaultProfile = `Você é um assistente teológico especializado na doutrina das Assembleias de Deus no Brasil, equipado com um sistema de busca inteligente que consulta automaticamente fontes autorizadas antes de responder.
 
-SUA ESPECIALIDADE:
-- Teologia Pentecostal Assembleiana tradicional
-- Comentários de Escola Dominical (lições bíblicas da CPAD)
-- Doutrina assembleiana histórica e contemporânea
-- Hermenêutica e exegese no contexto pentecostal
+SISTEMA DE BUSCA INTEGRADO:
+1. ANTES DE RESPONDER, o sistema consulta automaticamente:
+   - Sites teológicos assembleianos autorizados
+   - Conteúdo de 50+ autores assembleianos mapeados
+   - Lições bíblicas da CPAD, artigos teológicos e subsídios
+   
+   FONTES DE BUSCA E REFERÊNCIA:
+   - https://www.estudantesdabiblia.com.br/
+   - https://www.cpadnews.com.br/category/colunistas/
+   - https://esbocoebd.blogspot.com/
+   - https://adalagoas.com.br/ad-alagoas/licoes-biblicas
+   - https://geremiasdocouto.blogspot.com/
+   - https://prdrdouglasbaptista.blogspot.com/
+   - https://silasdaniel.blogspot.com/
+   - https://raizespentecostais.com.br/
+   - https://www.subsidioebd.com.br/
+   - https://prelisclementino.blogspot.com/
+   - https://www.esbocosermao.com/
 
-REFERÊNCIAS E AUTORES DE BASE:
-1. "PAIS" DA TEOLOGIA ASSEMBLEIANA (CLÁSSICOS/IN MEMORIAM):
-- Pr. Antonio Gilberto - "Pai da Escola Dominical" no Brasil, autor do "Manual da Escola Dominical"
-- Pr. Eurico Bergstén - Teólogo sistemático, comentarista histórico
-- Pr. Severino Pedro da Silva - Maior especialista em Escatologia da denominação
-- Pr. Claudionor de Andrade - Escritor prolífico, apologista, historiador (consultor doutrinário)
-- Pr. Lawrence Olson - Missionário, estruturou doutrinas pentecostais
-- Pr. Emílio Conde - Historiador das Assembleias de Deus no Brasil
-- Pr. Alcebíades Pereira Vasconcelos - Especialista em obreiros e liturgia
-- Pr. Nels Nelson - Pioneiro na literatura escrita da igreja
-- Pr. Orlando Boyer - Autor da "Pequena Enciclopédia Bíblica"
-- Pr. Gustavo Kessler - Referência em doutrina e costumes
-- Pr. Valdir Bícego - Pregador e comentarista
-- Pr. Estevam Ângelo de Souza - Comentários profundos
-- Pr. Abraão de Almeida - Autor clássico amplamente lido
-- Pr. Geziel Gomes - Grande pregador com obras publicadas
-- Pr. Tarcísio Gilberto - Teólogo e hebraísta
+2. ANÁLISE INTELIGENTE DE CONSULTA:
+   - Identifica automaticamente autores mencionados na pergunta
+   - Busca referências relevantes nos conteúdos autorizados
+   - Avalia relevância com base em: correspondência temática, autoridade do autor, atualidade
+   - Classifica autores por categorias para melhor contextualização
 
-2. COMENTARISTAS DE LIÇÕES BÍBLICAS E TEÓLOGOS ATUAIS:
-- Pr. Elienai Cabral - Especialista em Efésios e Romanos
-- Pr. Esequias Soares - Apologética e autoridade em Cânon Bíblico
-- Pr. Elinaldo Renovato - Ética Cristã e Família
-- Pr. José Gonçalves - Teologia contemporânea e avivamento
-- Pr. Douglas Baptista - Liderança do Conselho de Educação
-- Pr. Osiel Gomes - Liderança e obras paulinas
-- Pr. Claiton Pommerening - História e Pentecostalismo
-- Pr. Wagner Gaby - Epístolas Gerais
-- Pr. Reynaldo Odilo - Aplicação prática e jurídica da Bíblia
-- Pr. Valmir Nascimento - Apologética cultural e jovens
-- Pr. Natalino das Neves - Justiça social e profetas menores
-- Pr. Alexandre Coelho - Juventude e teologia prática
-- Pr. Silas Daniel - Historiador, especialista em Arminianismo
-- Pr. César Moisés Carvalho - Pós-modernidade e educação
-- Pr. Elias Torralbo - Teólogo e diretor executivo da FAESP
-- Pr. Jamierson Oliveira - Juventude
-- Pr. Marcelo Olive - Redator e comentarista
-- Pr. Esdras Bentho - Hermenêutica (interpretação bíblica)
-- Pr. Luíz César Mariano - Editor de Bíblias de estudo da CPAD
+3. DIRETRIZES DE RESPOSTA COM BUSCA:
+   - Baseie-se PRIMARIAMENTE nas fontes encontradas pela busca
+   - Cite explicitamente autores e obras quando relevante
+   - Indique "Baseado em: [Autor, Obra]" quando usar conteúdo específico
+   - Se nenhuma fonte for encontrada, use o conhecimento teológico assembleiano padrão
 
-3. AUTORES DE REFERÊNCIA, LIDERANÇA E EDUCAÇÃO CRISTÃ:
-- Pr. José Wellington Bezerra da Costa - Presidente de honra da CGADB
-- Pr. Ciro Sanches Zibordi - Apologista, série "Erros que os pregadores cometem"
-- Pr. Geremias do Couto - Jornalista e teólogo, reflexão histórica
-- Pr. Isael de Araujo - Principal historiador atual (Dicionário do Movimento Pentecostal)
-- Pr. Marcos Tuler - Maior autoridade em Pedagogia e Didática para professores
-- Pr. Nemuel Kessler - Administração eclesiástica e cerimonial
-- Pr. Paulo Romeiro - Apologética contra neopentecostalismo
-- Pr. Jamiel de Oliveira Lopes - Sociólogo, área de jovens/adolescentes
-- Profª. Telma Bueno - Educação Cristã infanto-juvenil
-- Profª. Helena Figueiredo - Ministério infantil
-- Pr. Joá Caitano - Escritor e líder
-- Pr. Kemuel Sotero - Líder no Conselho de Doutrina
-- Pr. Roberto Cruvinel - Apologista e escritor
-- Pr. Messias Ribeiro - Família e casamento
-- Pr. Abiezer Apolinário - Jurista e temas de cidadania
-- Pr. Dejair Batista Silvério - Comentarista ocasional
-- Pr. Donizeti Lee - Música e louvor
-- Pr. Napoleão de Castro - Batismo no Espírito Santo
+PERFIL DOS AUTORES DE BASE:
+1. CLÁSSICOS: Antonio Gilberto, Eurico Bergstén, Severino Pedro da Silva, Claudionor de Andrade, Lawrence Olson, Emílio Conde, Orlando Boyer, Abraão de Almeida, Geziel Gomes.
+2. ATUAIS: Elienai Cabral, Esequias Soares, Elinaldo Renovato, José Gonçalves, Douglas Baptista, Osiel Gomes, Silas Daniel, Esdras Bentho.
+3. EDUCAÇÃO/LIDERANÇA: José Wellington, Ciro Zibordi, Marcos Tuler, Paulo Romeiro.
 
-DIRETRIZES DE RESPOSTA:
-1. Baseie-se sempre nos ensinamentos desses autores quando relevante
-2. Priorize a visão teológica assembleiana tradicional
-3. Use linguagem pastoral e acessível, adequada ao contexto brasileiro
-4. Cite versículos bíblicos apropriados (preferencialmente Almeida Corrigida Fiel)
-5. Evite influências de outras vertentes teológicas não alinhadas com o pentecostalismo assembleiano
-6. Quando abordar temas doutrinários, faça referência aos autores especialistas no assunto
-7. Mantenha o foco na edificação, ensino e aplicação prática para a vida cristã
+AUTORES MAPEADOS (sistema reconhece automaticamente):
+"Antonio Gilberto", "Eurico Bergstén", "Severino Pedro da Silva", "Claudionor de Andrade", 
+"Lawrence Olson", "Emílio Conde", "Alcebíades Pereira Vasconcelos", "Nels Nelson", 
+"Orlando Boyer", "Gustavo Kessler", "Valdir Bícego", "Estevam Ângelo de Souza", 
+"Abraão de Almeida", "Geziel Gomes", "Tarcísio Gilberto", "Elienai Cabral", 
+"Esequias Soares", "Elinaldo Renovato", "José Gonçalves", "Douglas Baptista", 
+"Osiel Gomes", "Claiton Pommerening", "Wagner Gaby", "Reynaldo Odilo", 
+"Valmir Nascimento", "Natalino das Neves", "Alexandre Coelho", "Silas Daniel", 
+"César Moisés Carvalho", "Elias Torralbo", "Jamierson Oliveira", "Marcelo Olive", 
+"Esdras Bentho", "Luíz César Mariano", "José Wellington Bezerra da Costa", 
+"Ciro Sanches Zibordi", "Geremias do Couto", "Isael de Araujo", "Marcos Tuler", 
+"Nemuel Kessler", "Paulo Romeiro", "Jamiel de Oliveira Lopes", "Telma Bueno", 
+"Helena Figueiredo", "Joá Caitano", "Kemuel Sotero", "Roberto Cruvinel", 
+"Messias Ribeiro", "Abiezer Apolinário", "Dejair Batista Silvério", "Donizeti Lee", 
+"Napoleão de Castro"
 
-Responda sempre em português brasileiro de forma clara, organizada e fundamentada biblicamente.`;
+DIRETRIZES:
+1. Responda com base no pentecostalismo clássico assembleiano.
+2. Cite os autores acima para validar argumentos.
+3. Use a Bíblia Almeida Revista e Corrigida (ARC) como referência bíblica.
+4. Mantenha tom pastoral, porém tecnicamente profundo.
+5. Se a pergunta for sobre EBD, use a estrutura das revistas da CPAD.
+6. Consulte a Declaração de fé das Assembleias de Deus do Brasil para questões doutrinárias.
+7. Para esboços de sermão, consulte esboços da IEADPE e https://www.esbocosermao.com/
 
-// DIRETRIZES THOMPSON
-const thompsonGuidelines = `[DIRETRIZ DE PERSONA]
-Você é o motor de indexação da Bíblia de Referência Thompson com inteligência de profundidade temática.
-[REGRAS DE RESPOSTA - TRAVA RÍGIDA]
-EXTENSÃO VARIÁVEL: A quantidade de versículos na cadeia deve ser proporcional à importância do tema.
-SISTEMA DE CADEIA: Toda resposta deve seguir o fluxo: Versículo -> Tópico Curto -> Link Numérico.
-SEM COMENTÁRIOS: Proibido adicionar opiniões ou nomes de autores.
-PADRÃO DE SAÍDA: - [Nº do Índice] TÍTULO DO TEMA
-Lista numerada de versículos com links "Siga para".
-Indicação de [Fim da Cadeia].`;
+FORMATO DE RESPOSTA COM BUSCA:
+1. CONTEXTUALIZAÇÃO DA BUSCA: "🔍 O sistema consultou fontes assembleianas sobre este tema..."
+2. SÍNTESE DAS FONTES ENCONTRADAS: "Foram identificadas referências em: [Autores/Obras]"
+3. RESPOSTA BASEADA NAS FONTES: Desenvolva o tema citando os autores quando apropriado
+4. INDICAÇÃO DE FONTE: "[Baseado em: Autor, Obra, Fonte]" para citações específicas
+5. FUNDAMENTAÇÃO BÍBLICA: Referências da ARC
 
-// DIRETRIZES DE EXEGESE
-const exegeseGuidelines = `[DIRETRIZ DE PERSONA]
-Você é um Especialista em Exegese e Manuscritologia das Assembleias de Deus e da CPAD.
-[PADRÃO DE SAÍDA OBRIGATÓRIO]
-## 1. ANÁLISE MORFOLÓGICA [STRONG]
-- [Palavra em Português] -> [Original/Transliteração]: (Definição gramatical e léxica exaustiva).
-## 2. DIAGRAMA DE ESTRUTURA LITERÁRIA
-(Representação visual da organização do texto, destacando o Ponto Focal/Quiasmo).
-## 3. SÍNTESE DO MESTRE (EXEGESE APLICADA)
-(Conclusão técnica baseada na escola de Esdras Bentho).`;
+PRIORIDADES:
+1. Fontes encontradas na busca teológica (sites listados acima)
+2. Autores assembleianos especialistas no tema
+3. Lições bíblicas da CPAD e subsídios EBD
+4. Conteúdo de blogs autorizados de pastores assembleianos
+5. Conhecimento teológico assembleiano geral
+6. Declaração de Fé das Assembleias de Deus do Brasil
 
-// Configuração dos 6 modos de análise
+Responda sempre em português brasileiro com clareza e fundamentação bíblica, integrando os resultados da busca inteligente ao perfil teológico assembleiano tradicional.`;
+
+// ============================================================================
+// DIRETRIZES DOS MODOS COM SISTEMA DE BUSCA INTEGRADA
+// ============================================================================
 const modeGuidelines = {
-'visao': `Você opera no modo [VISÃO GERAL]. Forneça um panorama e síntese teológica assembleiana sobre o tema solicitado.`,
-'esboco': `Você opera no modo [ESBOÇO]. Crie uma estrutura homilética para pregação assembleiana.`,
-'exegese': exegeseGuidelines,
-'aplicacao': `Você opera no modo [APLICAÇÃO]. Foque na vida diária e prática cristã.`,
-'contexto': `Você opera no modo [CONTEXTO HISTÓRICO]. Aborde cultura e arqueologia da época.`,
-'thompson': thompsonGuidelines
+    'visao': `[MODO BUSCA VISÃO GERAL]
+🔍 SISTEMA ATIVADO: Busca automática em fontes assembleianas sobre o tema.
+
+FONTES DE CONSULTA PRIMÁRIAS:
+- https://www.estudantesdabiblia.com.br/
+- https://www.cpadnews.com.br/category/colunistas/
+- https://esbocoebd.blogspot.com/
+- https://adalagoas.com.br/ad-alagoas/licoes-biblicas
+- https://geremiasdocouto.blogspot.com/
+- https://prdrdouglasbaptista.blogspot.com/
+- https://silasdaniel.blogspot.com/
+- https://raizespentecostais.com.br/
+
+DIRETRIZES:
+1. Execute busca em todas as fontes listadas
+2. Identifique autores assembleianos especialistas no tema (Clássicos, Atuais, Educação/Liderança)
+3. Forneça panorama sintetizando as perspectivas encontradas
+4. Cite as fontes principais: "[Visão baseada em: Autor (Categoria), Obra, Fonte]"
+5. Destaque pontos consensuais e abordagens específicas da tradição
+6. Use a Bíblia ARC como referência bíblica
+7. Se relevante, cite a Declaração de Fé das ADs
+
+FORMATO DE RESPOSTA:
+• Contextualização da busca realizada e fontes consultadas
+• Síntese das principais perspectivas encontradas, com categorização de autores
+• Panorama teológico assembleiano integrado
+• Referências às fontes consultadas (incluindo URLs quando aplicável)
+• Fundamentação bíblica com referências da ARC`,
+
+    'esboco': `[MODO BUSCA ESBOÇO]
+🔍 SISTEMA ATIVADO: Busca automática por esboços e estruturas homiléticas assembleianas.
+
+FONTES DE CONSULTA PRIMÁRIAS:
+- https://www.esbocosermao.com/
+- https://esbocoebd.blogspot.com/
+- https://www.subsidioebd.com.br/
+- Esboços da IEADPE
+- https://prelisclementino.blogspot.com/
+- https://geremiasdocouto.blogspot.com/
+- https://prdrdouglasbaptista.blogspot.com/
+
+DIRETRIZES:
+1. Consulte esboços de pregação de pastores assembleianos nas fontes acima
+2. Busque estruturas homiléticas em lições da CPAD (https://adalagoas.com.br/ad-alagoas/licoes-biblicas)
+3. Identifique abordagens pentecostais do tema
+4. Integre citações de autores assembleianos relevantes, indicando categoria
+5. Formate com aplicação prática na tradição assembleiana
+6. Use a Bíblia ARC como referência bíblica
+7. Consulte modelos da IEADPE para estrutura
+
+FORMATO DE ESBOÇO:
+TEMA: [com referência a autores que trataram do assunto, indicando categoria]
+TEXTO: [com indicação de comentaristas assembleianos e referência ARC]
+INTRODUÇÃO: [contextualizada na tradição pentecostal]
+I. PONTO PRINCIPAL 1 [com base em Autor (Categoria)/Obra]
+   A. Subponto [com aplicação assembleiana]
+   B. Subponto [com referência bíblica ARC e comentário]
+II. PONTO PRINCIPAL 2 [baseado em busca teológica]
+CONCLUSÃO: [integração das fontes encontradas]
+[Fontes consultadas: Lista resumida com URLs quando aplicável]`,
+
+    'dicionario': `[MODO DICIONÁRIO TEOLÓGICO]
+🔍 SISTEMA ATIVADO: Busca automática por definições e conceitos na tradição assembleiana.
+
+FONTES DE CONSULTA PRIMÁRIAS:
+- https://www.estudantesdabiblia.com.br/ (dicionário bíblico)
+- https://www.cpadnews.com.br/category/colunistas/ (artigos conceituais)
+- Obras de Antonio Gilberto, Claudionor de Andrade (autores clássicos)
+- https://silasdaniel.blogspot.com/ (conceitos contemporâneos)
+- https://raizespentecostais.com.br/ (contexto histórico)
+
+DIRETRIZES:
+1. Consulte dicionários teológicos de autores assembleianos
+2. Busque definições em obras de referência da CPAD
+3. Identifique o significado na perspectiva pentecostal
+4. Inclua referências bíblicas da ARC e exemplos práticos
+5. Compare com outras tradições quando relevante
+6. Classifique autores por categoria (Clássico, Atual, etc.)
+
+FORMATO DE RESPOSTA:
+• DEFINIÇÃO: [Conceito claro e conciso]
+• PERSPECTIVA ASSEMBLEIANA: [Como a denominação entende o termo]
+• REFERÊNCIAS BÍBLICAS: [Principais textos relacionados da ARC]
+• AUTORES DE REFERÊNCIA: [Quem tratou do tema na tradição, com categoria]
+• APLICAÇÃO PRÁTICA: [Como se manifesta na vida da igreja]
+• [Baseado em: Autor (Categoria), Obra, Fonte - quando aplicável]`,
+
+    'exegese': `[MODO BUSCA EXEGESE]
+Você é um Especialista em Exegese e Manuscritologia com sistema de busca em fontes assembleianas.
+
+FONTES DE CONSULTA PARA EXEGESE:
+- https://www.estudantesdabiblia.com.br/ (análises textuais)
+- https://www.cpadnews.com.br/category/colunistas/ (artigos técnicos)
+- Obras de Esdras Bentho, Tarcísio Gilberto (autores especializados)
+- https://silasdaniel.blogspot.com/ (estudos bíblicos aprofundados)
+- https://raizespentecostais.com.br/ (perspectiva histórica)
+
+SISTEMA DE BUSCA EXEGÉTICA:
+1. CONSULTA AUTOMÁTICA DE FONTES:
+   - Obras de autores assembleianos sobre exegese (Esdras Bentho, Tarcísio Gilberto)
+   - Comentários exegéticos publicados pela CPAD
+   - Artigos sobre hermenêutica pentecostal nas fontes listadas
+
+2. INTEGRAÇÃO DE FONTES ENCONTRADAS:
+   - Cite autores assembleianos especialistas no livro/texto analisado, indicando categoria
+   - Indique abordagens específicas da tradição pentecostal
+   - Referencie obras relevantes encontradas na busca
+   - Use a Bíblia ARC como base textual
+
+[PADRÃO DE SAÍDA OBRIGATÓRIO COM BUSCA]
+🔍 EXEGESE COM FONTES: "A análise integra contribuições de autores assembleianos das seguintes fontes: [listar fontes consultadas]"
+
+## 1. ANÁLISE MORFOLÓGICA [STRONG + FONTES]
+- [Palavra em Português] -> [Original/Transliteração]: (Definição gramatical e léxica)
+  [Referência: Autor Assembleiano (Categoria), Obra, Fonte]
+
+## 2. DIAGRAMA DE ESTRUTURA LITERÁRIA
+(Representação visual com notas da abordagem assembleiana)
+
+## 3. SÍNTESE DO MESTRE (EXEGESE APLICADA)
+(Conclusão técnica baseada na escola de Esdras Bentho e autores assembleianos consultados)
+[Fontes consultadas: Lista de autores/obras encontradas na busca com URLs quando aplicável]`,
+
+    'aplicacao': `[MODO BUSCA APLICAÇÃO]
+🔍 SISTEMA ATIVADO: Busca por aplicações práticas na tradição assembleiana.
+
+FONTES DE CONSULTA PRIMÁRIAS:
+- https://www.cpadnews.com.br/category/colunistas/ (aplicações práticas)
+- https://prdrdouglasbaptista.blogspot.com/ (vida pastoral)
+- https://geremiasdocouto.blogspot.com/ (consagração)
+- https://silasdaniel.blogspot.com/ (ética cristã)
+- https://esbocoebd.blogspot.com/ (aplicações para EBD)
+- https://www.subsidioebd.com.br/ (subsídios práticos)
+
+DIRETRIZES:
+1. Consulte artigos sobre vida cristã prática de pastores assembleianos
+2. Busque aplicações em lições da Escola Dominical
+3. Identifique orientações práticas de autores como Elinaldo Renovato, Messias Ribeiro
+4. Integre exemplos da prática assembleiana contemporânea
+5. Foque em aplicação na vida diária do crente pentecostal
+6. Use a Bíblia ARC como base para aplicações
+
+FORMATO DE RESPOSTA:
+• Contexto prático na vida assembleiana
+• Aplicações específicas baseadas em autores consultados (indicando categoria)
+• Exemplos da tradição pentecostal brasileira
+• Orientações para implementação na igreja local
+• Fundamentação bíblica com referências da ARC
+• [Baseado em aplicações de: Autor (Categoria), Ministério, Fonte]`,
+
+    'contexto': `[MODO BUSCA CONTEXTO HISTÓRICO]
+🔍 SISTEMA ATIVADO: Busca por estudos históricos e culturais na perspectiva assembleiana.
+
+FONTES DE CONSULTA PRIMÁRIAS:
+- https://raizespentecostais.com.br/ (história pentecostal)
+- https://www.estudantesdabiblia.com.br/ (estudos históricos)
+- Obras de Isael de Araujo, Emílio Conde (historiadores assembleianos)
+- https://www.cpadnews.com.br/category/colunistas/ (artigos históricos)
+- Declaração de Fé das Assembleias de Deus do Brasil
+
+DIRETRIZES:
+1. Consulte obras de historiadores assembleianos (Isael de Araujo, Emílio Conde)
+2. Busque artigos sobre arqueologia bíblica na visão pentecostal
+3. Identifique estudos culturais de autores como Claudionor de Andrade
+4. Integre a perspectiva histórica da tradição assembleiana
+5. Contextualize com o desenvolvimento do pentecostalismo no Brasil
+6. Use a Bíblia ARC como referência para o contexto bíblico
+
+FORMATO DE RESPOSTA:
+• Contexto histórico-cultural com perspectiva assembleiana
+• Referências a estudos de autores pentecostais (indicando categoria)
+• Conexão com a tradição histórica da denominação
+• Aplicações para a igreja contemporânea
+• Fundamentação bíblica com referências da ARC
+• [Fontes históricas consultadas: Autores (Categoria)/Obras com URLs quando aplicável]`,
+
+    'thompson': `[MODO BUSCA THOMPSON]
+Você opera como motor de indexação da Bíblia de Referência Thompson com sistema de busca temática inteligente.
+
+FONTES DE CONSULTA PARA TEMAS:
+- https://www.estudantesdabiblia.com.br/ (estudos temáticos)
+- https://www.cpadnews.com.br/category/colunistas/ (temas contemporâneos)
+- Lições bíblicas da CPAD (abordagens temáticas)
+- https://esbocoebd.blogspot.com/ (temas para EBD)
+- https://www.subsidioebd.com.br/ (subsídios temáticos)
+
+SISTEMA DE BUSCA THOMPSON:
+1. ANTES DE CRIAR CADEIA: Busque automaticamente temas relacionados em:
+   - Comentários de autores assembleianos sobre o tema
+   - Lições bíblicas da CPAD com abordagem similar
+   - Artigos teológicos sobre interpretação bíblica
+
+2. ANÁLISE TEMÁTICA INTELIGENTE:
+   - Identifique subtemas relevantes na tradição assembleiana
+   - Verifique se há tratamento específico por autores de referência
+   - Considere a abordagem pentecostal do tema
+   - Use a Bíblia ARC como base para referências
+
+[PADRÃO DE SAÍDA COM BUSCA]
+🔍 BUSCA THOMPSON: "Foram consultados autores assembleianos sobre temas relacionados nas seguintes fontes: [listar fontes]"
+
+- [Nº do Índice] TÍTULO DO TEMA [Referência: Autor Assembleiano (Categoria)]
+  Lista numerada de versículos da ARC com links "Siga para"
+  [Baseado em: Autor (Categoria), Obra, Fonte - quando aplicável]
+
+Indicação de [Fim da Cadeia - Busca concluída].`,
+
+    'personagem': `[MODO DICIONÁRIO DE PERSONAGENS CPAD]
+🔍 SISTEMA ATIVADO: Busca automática por informações sobre personagens bíblicos na tradição assembleiana.
+
+FONTES DE CONSULTA PRIMÁRIAS:
+- https://www.estudantesdabiblia.com.br/ (estudos sobre personagens)
+- Obras de Antonio Gilberto, Elienai Cabral (análise de caráter)
+- Dicionário VINE e dicionariobiblico.com.br
+- Lições da CPAD sobre personagens bíblicos
+- https://www.cpadnews.com.br/category/colunistas/ (artigos sobre personagens)
+- https://silasdaniel.blogspot.com/ (estudos biográficos)
+
+DIRETRIZES:
+Ao receber um nome, siga rigorosamente esta estrutura:
+1. **ETIMOLOGIA**: Significado radical (Hebraico/Grego) e transliteração.
+2. **IDENTIFICAÇÃO NUMERADA**: Liste cada indivíduo (1, 2, 3...) com clareza.
+3. **BIOGRAFIA E BASE BÍBLICA**: Resumo da vida e TODAS as referências (ARC).
+4. **ANÁLISE DE CARÁTER**: Pontos fortes e fracos sob a ótica de autores como Antonio Gilberto e Elienai Cabral.
+5. **CONEXÃO THOMPSON/TIPOLOGIA**: Se houver, cite o índice Thompson e se o personagem prefigura Cristo.
+6. **APLICAÇÃO ASSEMBLEIANA**: Uma lição prática para a igreja hoje.
+
+FORMATO DE RESPOSTA:
+• ETIMOLOGIA: [Significado do nome, transliteração]
+• IDENTIFICAÇÃO: [Lista numerada de personagens com esse nome]
+• BIOGRAFIA: [Resumo da vida com todas as referências ARC]
+• ANÁLISE DE CARÁTER: [Pontos fortes/fracos baseados em autores assembleianos]
+• TIPOLOGIA: [Conexão com Cristo e referência Thompson quando aplicável]
+• APLICAÇÃO: [Lição prática para a igreja assembleiana]
+• [Baseado em: Autor (Categoria), Obra, Fonte]`
 };
 
-const prompts = {
-'visao': 'Forneça uma visão geral assembleiana sobre: ',
-'esboco': 'Crie um esboço para pregação assembleiana sobre: ',
-'exegese': 'Faça análise exegética detalhada de: ',
-'aplicacao': 'Como aplicar na vida cristã prática: ',
-'contexto': 'Explique o contexto histórico-cultural de: ',
-'thompson': 'Análise Thompson para o tema: '
-};
-
-const promptNames = {
-'visao': 'Visão Geral',
-'esboco': 'Esboço',
-'exegese': 'Exegese',
-'aplicacao': 'Aplicação',
-'contexto': 'Contexto Histórico',
-'thompson': 'Thompson'
-};
-
-// UTILIDADES
-function storageAvailable(type) {
-try {
-const storage = window[type];
-const testKey = '__storage_test__';
-storage.setItem(testKey, testKey);
-storage.removeItem(testKey);
-return true;
-} catch (e) {
-return false;
-}
+// ============================================================================
+// SISTEMA DE SELEÇÃO DE IA
+// ============================================================================
+function toggleAIDropdown(event) {
+    event.stopPropagation();
+    const dropdown = document.getElementById('ai-dropdown');
+    dropdown.classList.toggle('show');
 }
 
-function copyToClipboard(text) {
-navigator.clipboard.writeText(text).catch(() => {
-const ta = document.createElement('textarea');
-ta.value = text;
-document.body.appendChild(ta);
-ta.select();
-document.execCommand('copy');
-document.body.removeChild(ta);
-});
+function selectAI(model) {
+    // Fechar dropdown
+    const dropdown = document.getElementById('ai-dropdown');
+    dropdown.classList.remove('show');
+    
+    // Verificar se a IA tem chave configurada
+    if (!apiKeys[model]) {
+        alert(`⚠️ ${aiConfig[model].name} não está configurado. Configure a chave primeiro.`);
+        showApiModal();
+        selectApiProvider(model);
+        return;
+    }
+    
+    // Verificar se a IA está disponível
+    if (!apiQuotaStatus[model].available) {
+        const lastError = apiQuotaStatus[model].lastError || 'Cota excedida';
+        if (confirm(`⚠️ ${aiConfig[model].name} pode estar com problemas (${lastError}). Deseja usar mesmo assim?`)) {
+            activeModel = model;
+            updateAISelector();
+        } else {
+            // Tentar encontrar próxima IA disponível
+            const nextAI = getNextAvailableAI(model);
+            if (nextAI && nextAI !== model) {
+                selectAI(nextAI);
+                return;
+            }
+        }
+    } else {
+        activeModel = model;
+        updateAISelector();
+    }
+    
+    // Salvar preferência
+    localStorage.setItem('mysword_active_model', activeModel);
+    
+    // Atualizar mensagem de status
+    updateAIStatusDisplay();
 }
 
+function updateAISelector() {
+    const selector = document.getElementById('ai-selector');
+    const currentIcon = document.getElementById('ai-current-icon');
+    const currentName = document.getElementById('ai-current-name');
+    
+    const config = aiConfig[activeModel];
+    
+    // Atualizar ícone e nome
+    currentIcon.textContent = config.icon;
+    currentName.textContent = config.name;
+    
+    // Atualizar cor do ícone
+    currentIcon.style.color = config.color;
+    
+    // Atualizar seleção no dropdown
+    document.querySelectorAll('.ai-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    document.getElementById(`ai-option-${activeModel}`).classList.add('selected');
+    
+    // Atualizar estilo do seletor baseado na disponibilidade
+    if (!apiQuotaStatus[activeModel].available) {
+        selector.style.borderColor = '#ff453a';
+        selector.style.background = 'rgba(255, 69, 58, 0.1)';
+    } else {
+        selector.style.borderColor = config.color;
+        selector.style.background = 'rgba(255, 255, 255, 0.1)';
+    }
+}
+
+function updateAIStatusDisplay() {
+    // Atualizar status de cada IA no dropdown
+    const models = ['gemini', 'mistral', 'deepseek', 'groq'];
+    
+    models.forEach(model => {
+        const statusElement = document.getElementById(`ai-status-${model}`);
+        if (!statusElement) return;
+        
+        // Verificar se tem chave
+        if (!apiKeys[model]) {
+            statusElement.textContent = 'NÃO CONFIG';
+            statusElement.className = 'option-status status-offline';
+            return;
+        }
+        
+        // Verificar status de quota
+        if (!apiQuotaStatus[model].available) {
+            statusElement.textContent = 'INDISPONÍVEL';
+            statusElement.className = 'option-status status-error';
+        } else {
+            // Mostrar limites de cota
+            switch(model) {
+                case 'gemini':
+                    statusElement.textContent = '20/DIA';
+                    statusElement.className = 'option-status status-warning';
+                    break;
+                case 'mistral':
+                    statusElement.textContent = '20/MIN';
+                    statusElement.className = 'option-status status-available';
+                    break;
+                case 'deepseek':
+                    statusElement.textContent = 'ILIMITADO';
+                    statusElement.className = 'option-status status-available';
+                    break;
+                case 'groq':
+                    statusElement.textContent = '500/DIA';
+                    statusElement.className = 'option-status status-available';
+                    break;
+            }
+        }
+    });
+}
+
+function getNextAvailableAI(currentModel = null) {
+    // Se o modelo atual ainda estiver disponível, usar ele
+    if (currentModel && apiQuotaStatus[currentModel].available && apiKeys[currentModel]) {
+        return currentModel;
+    }
+    
+    // Procurar próxima IA disponível na ordem de fallback
+    for (const provider of apiFallbackOrder) {
+        if (apiQuotaStatus[provider].available && apiKeys[provider]) {
+            // Verificar se há tempo de retry
+            if (apiQuotaStatus[provider].retryAfter && Date.now() < apiQuotaStatus[provider].retryAfter) {
+                continue; // Ainda não pode ser usada
+            }
+            return provider;
+        }
+    }
+    
+    // Se nenhuma estiver disponível, tentar qualquer uma com chave
+    for (const provider of apiFallbackOrder) {
+        if (apiKeys[provider]) {
+            return provider;
+        }
+    }
+    
+    return null;
+}
+
+// ============================================================================
+// SISTEMA DE SELEÇÃO DE MODO
+// ============================================================================
+function toggleModeDropdown(event) {
+    event.stopPropagation();
+    const dropdown = document.getElementById('mode-dropdown');
+    dropdown.classList.toggle('show');
+}
+
+function selectMode(mode) {
+    // Fechar dropdown
+    const dropdown = document.getElementById('mode-dropdown');
+    dropdown.classList.remove('show');
+    
+    // Atualizar modo atual
+    modoAtual = mode;
+    
+    // Atualizar o seletor de modo
+    updateModeSelector();
+    
+    // Atualizar placeholder do input
+    updateInputPlaceholder();
+    
+    // Salvar preferência
+    localStorage.setItem('mysword_active_mode', modoAtual);
+}
+
+function updateModeSelector() {
+    const selector = document.getElementById('mode-selector');
+    const currentIcon = document.getElementById('mode-current-icon');
+    const currentName = document.getElementById('mode-current-name');
+    
+    // Mapeamento de modos para ícones e nomes
+    const modeConfig = {
+        'visao': { icon: '👁️', name: 'Visão Geral' },
+        'esboco': { icon: '📝', name: 'Esboço' },
+        'dicionario': { icon: '📚', name: 'Dicionário' },
+        'exegese': { icon: '🔬', name: 'Exegese' },
+        'aplicacao': { icon: '💡', name: 'Aplicação' },
+        'contexto': { icon: '🏛️', name: 'Contexto Histórico' },
+        'thompson': { icon: '⛓️', name: 'Thompson' },
+        'personagem': { icon: '👤', name: 'Personagens' }
+    };
+    
+    const config = modeConfig[modoAtual] || { icon: '👁️', name: 'Visão Geral' };
+    
+    // Atualizar ícone e nome
+    currentIcon.textContent = config.icon;
+    currentName.textContent = config.name;
+    
+    // Atualizar seleção no dropdown
+    document.querySelectorAll('.mode-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    if (modoAtual) {
+        document.getElementById(`mode-option-${modoAtual}`).classList.add('selected');
+    }
+    
+    // Atualizar estilo do seletor
+    selector.style.borderColor = '#0a84ff';
+    selector.style.background = 'rgba(10, 132, 255, 0.1)';
+}
+
+function updateInputPlaceholder() {
+    const input = document.getElementById('prompt-input');
+    const placeholders = {
+        'visao': 'Pergunte para uma visão geral sobre...',
+        'esboco': 'Digite o tema para um esboço...',
+        'dicionario': 'Digite o termo para o dicionário...',
+        'exegese': 'Digite o texto para análise exegética...',
+        'aplicacao': 'Digite o tema para aplicação prática...',
+        'contexto': 'Digite o texto para contexto histórico...',
+        'thompson': 'Digite o tema para cadeia Thompson...',
+        'personagem': 'Digite o nome do personagem bíblico...'
+    };
+    
+    input.placeholder = placeholders[modoAtual] || 'Pergunte sobre teologia assembleiana...';
+}
+
+// ============================================================================
+// FUNÇÕES DE UTILIDADE
+// ============================================================================
+function ehLixo(e) {
+    return !!e && (e.includes("</div>") || e.includes("</") || e.includes(">") || e.includes(".tag{") || e.includes(".orange{"));
+}
+
+function limparProfundo(e) {
+    var t = e.childNodes;
+    for (var n = t.length - 1; n >= 0; n--) {
+        var o = t[n];
+        if (o.nodeType === 3) {
+            if (ehLixo(o.nodeValue)) o.remove();
+        } else if (o.nodeType === 1) {
+            if (o.id !== "header-ai" && o.id !== "janela-chat" && o.id !== "espaco-topo" && o.id !== "api-modal-ios") {
+                if (o.matches && o.matches(".eng, .trans, .ref-eng, .orange, .tag, .wjc")) {
+                    o.remove();
+                } else {
+                    limparProfundo(o);
+                }
+            }
+        }
+    }
+}
+
+// ============================================================================
 // INICIALIZAÇÃO
+// ============================================================================
 window.onload = function() {
-isPrivateMode = !storageAvailable('localStorage');
-if (!isPrivateMode) {
-// Carregar chaves salvas
-const savedKeys = localStorage.getItem('mysword_api_keys');
-if (savedKeys) {
-try {
-apiKeys = JSON.parse(savedKeys);
-} catch (e) {
-console.error('Erro ao carregar chaves:', e);
-}
-}
-// Carregar modelo ativo
-const savedModel = localStorage.getItem('mysword_active_model');
-if (savedModel) activeModel = savedModel;
-// Carregar histórico
-const savedHistory = localStorage.getItem('mysword_float_chat_history');
-if (savedHistory) floatChatHistory = JSON.parse(savedHistory);
-// Carregar tema
-const savedTheme = localStorage.getItem('mysword_theme');
-if (savedTheme === 'light') document.body.classList.add('light-mode');
-}
-updateModelButtons();
-loadFloatChatHistory();
-initializeVerseSelection();
-updateSavedKeysDisplay();
+    // Limpar wallpaper antigo do localStorage
+    localStorage.removeItem("ios_wallpaper_url");
+    localStorage.removeItem("sermao_salvo");
+    
+    // Carregar configurações salvas
+    if (localStorage.getItem('mysword_api_keys')) {
+        try {
+            apiKeys = JSON.parse(localStorage.getItem('mysword_api_keys'));
+        } catch (e) {
+            console.error('Erro ao carregar chaves:', e);
+        }
+    }
+    
+    // Carregar modelos descobertos
+    if (localStorage.getItem('mysword_discovered_models')) {
+        try {
+            discoveredModels = JSON.parse(localStorage.getItem('mysword_discovered_models'));
+        } catch (e) {
+            console.error('Erro ao carregar modelos:', e);
+        }
+    }
+    
+    // Carregar status de quota
+    if (localStorage.getItem('mysword_api_quota_status')) {
+        try {
+            apiQuotaStatus = JSON.parse(localStorage.getItem('mysword_api_quota_status'));
+        } catch (e) {
+            console.error('Erro ao carregar status de quota:', e);
+        }
+    }
+    
+    // Carregar IA ativa
+    if (localStorage.getItem('mysword_active_model')) {
+        activeModel = localStorage.getItem('mysword_active_model');
+    }
+    
+    // Carregar modo ativo
+    if (localStorage.getItem('mysword_active_mode')) {
+        modoAtual = localStorage.getItem('mysword_active_mode');
+    }
+    
+    if (localStorage.getItem('mysword_chat_history')) {
+        try {
+            chatHistory = JSON.parse(localStorage.getItem('mysword_chat_history'));
+        } catch (e) {
+            console.error('Erro ao carregar histórico:', e);
+        }
+    }
+    
+    // Inicializar seleção de versículos
+    initializeVerseSelection();
+    
+    // Atualizar display das chaves
+    updateSavedKeysDisplay();
+    
+    // Atualizar seletores
+    updateAISelector();
+    updateAIStatusDisplay();
+    updateModeSelector();
+    updateInputPlaceholder();
+    
+    // Verificar status das APIs
+    checkAllApiStatus();
+    
+    // Limpar lixo periodicamente
+    setInterval(function() {
+        limparProfundo(document.body);
+    }, 1000);
 };
 
+// ============================================================================
 // SELEÇÃO DE VERSÍCULOS
+// ============================================================================
 function initializeVerseSelection() {
-document.addEventListener('click', function(e) {
-const target = e.target;
-const text = target.textContent || target.innerText;
-const versePattern = /(\d?\s?[A-Za-zÀ-ÿ]+\.?\s?\d+:\d+(?:[-\d+,; ]*\d*)?)/;
-if (versePattern.test(text)) {
-const inputField = document.getElementById('float-user-input');
-if (selectedPrompt) {
-inputField.value = prompts[selectedPrompt] + text.trim();
-} else {
-inputField.value = text.trim();
-}
-inputField.focus();
-target.classList.add('selected');
-setTimeout(() => target.classList.remove('selected'), 1500);
-}
-});
-}
-
-// JANELA FLUTUANTE
-function toggleFloatWindow() {
-const floatWindow = document.getElementById('mysword-float-window');
-const floatBtn = document.getElementById('mysword-float-btn');
-if (!floatWindowOpen) {
-floatWindow.style.display = 'flex';
-floatBtn.innerHTML = '✕';
-floatBtn.style.transform = 'rotate(90deg)';
-floatWindowOpen = true;
-resetWindowState();
-setTimeout(() => document.getElementById('float-user-input').focus(), 300);
-} else {
-floatWindow.style.display = 'none';
-floatBtn.innerHTML = '⚔️';
-floatBtn.style.transform = 'rotate(0deg)';
-floatWindowOpen = false;
-}
+    document.addEventListener('click', function(e) {
+        const target = e.target;
+        const text = target.textContent || target.innerText;
+        const versePattern = /(\d?\s?[A-Za-zÀ-ÿ]+\.?\s?\d+:\d+(?:[-\d+,; ]*\d*)?)/;
+        
+        if (versePattern.test(text)) {
+            const inputField = document.getElementById('prompt-input');
+            
+            // Adicionar prefixo do modo se estiver selecionado
+            let prefix = '';
+            if (modoAtual === 'visao') prefix = 'Visão Geral de ';
+            else if (modoAtual === 'esboco') prefix = 'Esboço sobre ';
+            else if (modoAtual === 'dicionario') prefix = 'Dicionário de ';
+            else if (modoAtual === 'exegese') prefix = 'Exegese de ';
+            else if (modoAtual === 'aplicacao') prefix = 'Aplicação de ';
+            else if (modoAtual === 'contexto') prefix = 'Contexto Histórico de ';
+            else if (modoAtual === 'thompson') prefix = 'Cadeia Thompson de ';
+            else if (modoAtual === 'personagem') prefix = 'Personagem: ';
+            
+            inputField.value = prefix + text.trim();
+            inputField.focus();
+            
+            // Destacar o versículo
+            target.classList.add('verse-selected');
+            setTimeout(() => target.classList.remove('verse-selected'), 1500);
+        }
+    });
 }
 
-function resetWindowState() {
-const floatWindow = document.getElementById('mysword-float-window');
-floatWindow.classList.remove('minimized', 'maximized', 'fullscreen');
-isMinimized = false;
-isMaximized = false;
-isFullscreen = false;
-floatWindow.style.width = '';
-floatWindow.style.height = '';
-floatWindow.style.maxWidth = '';
-floatWindow.style.maxHeight = '';
-floatWindow.style.bottom = '';
-floatWindow.style.right = '';
-floatWindow.style.borderRadius = '';
-floatWindow.style.border = '';
+// ============================================================================
+// INTERFACE E CONTROLES
+// ============================================================================
+function mudarFonte(e) {
+    tamFonte += e;
+    if (tamFonte < 12) tamFonte = 12;
+    if (tamFonte > 40) tamFonte = 40;
+    document.documentElement.style.setProperty("--font-sz", tamFonte + "px");
 }
 
-function minimizeWindow() {
-const floatWindow = document.getElementById('mysword-float-window');
-const minimizeBtn = document.getElementById('minimize-btn');
-if (isMinimized) {
-floatWindow.classList.remove('minimized');
-minimizeBtn.textContent = '─';
-minimizeBtn.title = 'Minimizar';
-isMinimized = false;
-} else {
-floatWindow.classList.add('minimized');
-minimizeBtn.textContent = '🗖';
-minimizeBtn.title = 'Restaurar';
-isMinimized = true;
-if (isMaximized) {
-floatWindow.classList.remove('maximized');
-isMaximized = false;
-document.getElementById('maximize-btn').textContent = '□';
-}
-if (isFullscreen) {
-floatWindow.classList.remove('fullscreen');
-isFullscreen = false;
-document.getElementById('fullscreen-btn').textContent = '⛶';
-}
-}
+function fechar(e) {
+    document.getElementById(e).style.display = "none";
+    desativarBotoes();
 }
 
-function maximizeWindow() {
-const floatWindow = document.getElementById('mysword-float-window');
-const maximizeBtn = document.getElementById('maximize-btn');
-if (isMaximized) {
-floatWindow.classList.remove('maximized');
-maximizeBtn.textContent = '□';
-maximizeBtn.title = 'Maximizar';
-isMaximized = false;
-if (isMinimized) {
-floatWindow.classList.remove('minimized');
-document.getElementById('minimize-btn').textContent = '─';
-isMinimized = false;
-}
-} else {
-floatWindow.classList.add('maximized');
-maximizeBtn.textContent = '🗗';
-maximizeBtn.title = 'Restaurar';
-isMaximized = true;
-if (isMinimized) {
-floatWindow.classList.remove('minimized');
-document.getElementById('minimize-btn').textContent = '─';
-isMinimized = false;
-}
-if (isFullscreen) {
-floatWindow.classList.remove('fullscreen');
-isFullscreen = false;
-document.getElementById('fullscreen-btn').textContent = '⛶';
-}
-}
+function desativarBotoes() {
+    modoAtual = '';
+    updateModeSelector();
+    updateInputPlaceholder();
+    localStorage.removeItem('mysword_active_mode');
 }
 
-function toggleFullscreen() {
-const floatWindow = document.getElementById('mysword-float-window');
-const fullscreenBtn = document.getElementById('fullscreen-btn');
-if (isFullscreen) {
-floatWindow.classList.remove('fullscreen');
-fullscreenBtn.textContent = '⛶';
-fullscreenBtn.title = 'Tela Cheia';
-isFullscreen = false;
-if (isMaximized) floatWindow.classList.add('maximized');
-} else {
-floatWindow.classList.add('fullscreen');
-fullscreenBtn.textContent = '🗕';
-fullscreenBtn.title = 'Sair da Tela Cheia';
-isFullscreen = true;
-if (isMinimized) {
-floatWindow.classList.remove('minimized');
-document.getElementById('minimize-btn').textContent = '─';
-isMinimized = false;
-}
-if (isMaximized) {
-floatWindow.classList.remove('maximized');
-document.getElementById('maximize-btn').textContent = '□';
-isMaximized = false;
-}
-}
-}
-
-document.addEventListener('click', function(e) {
-const floatWindow = document.getElementById('mysword-float-window');
-const floatBtn = document.getElementById('mysword-float-btn');
-const apiModal = document.getElementById('api-modal');
-if (floatWindowOpen && !floatWindow.contains(e.target) && !floatBtn.contains(e.target) &&
-(!apiModal || apiModal.style.display === 'none' || !apiModal.contains(e.target))) {
-toggleFloatWindow();
-}
-});
-
-// MENSAGENS
-function addFloatMessage(text, sender, model = activeModel) {
-const container = document.getElementById('float-chat-container');
-const messageDiv = document.createElement('div');
-messageDiv.className = `float-message float-${sender}-message`;
-
-if (sender === 'ai') {
-const header = document.createElement('div');
-header.className = 'message-header';
-let badgeClass = 'gemini-badge';
-let modelName = 'Gemini';
-if (model === 'mistral') { badgeClass = 'mistral-badge'; modelName = 'Mistral'; }
-else if (model === 'deepseek') { badgeClass = 'deepseek-badge'; modelName = 'DeepSeek'; }
-else if (model === 'groq') { badgeClass = 'groq-badge'; modelName = 'Llama'; }
-header.innerHTML = `⚔️ MySword AI <span class="ai-badge ${badgeClass}">${modelName}</span>`;
-messageDiv.appendChild(header);
-
-const content = document.createElement('div');
-content.className = 'message-content';
-content.style.fontSize = '14px';
-content.style.lineHeight = '1.4';
-const formatted = text
-.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-.replace(/\*(.*?)\*/g, '<em>$1</em>')
-.replace(/`(.*?)`/g, '<code>$1</code>')
-.replace(/\n/g, '<br>');
-content.innerHTML = formatted;
-messageDiv.appendChild(content);
-
-const copyBtn = document.createElement('button');
-copyBtn.className = 'copy-btn';
-copyBtn.innerHTML = '📋 Copiar';
-copyBtn.onclick = function() {
-copyToClipboard(text);
-copyBtn.innerHTML = '✅ Copiado!';
-copyBtn.style.background = 'var(--secondary)';
-copyBtn.style.borderColor = 'var(--secondary)';
-copyBtn.style.color = 'white';
-setTimeout(() => {
-copyBtn.innerHTML = '📋 Copiar';
-copyBtn.style.background = '';
-copyBtn.style.borderColor = '';
-copyBtn.style.color = '';
-}, 2000);
-};
-messageDiv.appendChild(copyBtn);
-} else {
-const content = document.createElement('div');
-content.style.fontSize = '14px';
-content.style.lineHeight = '1.4';
-const formatted = text
-.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-.replace(/\*(.*?)\*/g, '<em>$1</em>')
-.replace(/`(.*?)`/g, '<code>$1</code>')
-.replace(/\n/g, '<br>');
-content.innerHTML = formatted;
-messageDiv.appendChild(content);
+// ============================================================================
+// SISTEMA DE NOTAS COM TELEGRAPH - VERSÃO COM MELHOR TRATAMENTO DE ERRO
+// ============================================================================
+function abrirNotas() {
+    limparTela();
+    desativarBotoes();
+    var e = document.getElementById("chat-content");
+    e.innerHTML = '<div style="width:100%; height:100%; display:flex; flex-direction:column;">' +
+                  '<div style="text-align:center; margin-bottom:15px; margin-top:5px;">' +
+                  '<span style="color:#ffd60a; font-weight:bold; font-size:16px">📝 Notas Pessoais</span>' +
+                  '</div>' +
+                  '<textarea id="area-notas" placeholder="Digite suas notas aqui...\\n\\nDica: Use texto simples sem formatação complexa para evitar erros no Telegraph.\\n\\nPara testar: digite algo curto como "Teste de publicação" e clique em Publicar." ' +
+                  'oninput="localStorage.setItem(\'notas_salvas\', this.value)" ' +
+                  'style="flex:1; width:100%; background:rgba(0,0,0,0.2); color:#fff!important; font-size:17px; padding:12px; border:1px solid rgba(255,255,255,.1); border-radius:14px; resize:none; outline:none; font-family:sans-serif;">' +
+                  '</textarea>' +
+                  '<div style="display: flex; gap: 10px; margin-top: 15px;">' +
+                  '<button onclick="publicarTelegraph()" style="flex:1; padding:12px; background:#0088cc; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">' +
+                  '📄 Publicar no Telegraph</button>' +
+                  '<button onclick="copiarNotas()" style="flex:1; padding:12px; background:#30d158; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">' +
+                  '📋 Copiar Notas</button>' +
+                  '</div>' +
+                  '<div style="margin-top: 15px; padding: 10px; background: rgba(0, 136, 204, 0.1); border-radius: 8px; border: 1px solid #0088cc;">' +
+                  '<p style="color: #8bd6ff; margin: 0; font-size: 12px;">' +
+                  '💡 <strong>Telegraph:</strong> Serviço gratuito do Telegram para criar páginas web anônimas. Suas notas serão publicadas publicamente.<br>' +
+                  '🔍 <strong>Dica:</strong> Se falhar, abra o Console (F12) para ver detalhes do erro.' +
+                  '</p></div></div>';
+    
+    document.getElementById("janela-chat").style.display = "flex";
+    
+    setTimeout(function() {
+        var notasSalvas = localStorage.getItem("notas_salvas");
+        if (notasSalvas) {
+            document.getElementById("area-notas").value = notasSalvas;
+        }
+    }, 50);
 }
 
-container.appendChild(messageDiv);
-
-// FIX MOBILE: Timeout para garantir que o render terminou antes do scroll
-setTimeout(() => {
-container.scrollTop = container.scrollHeight;
-}, 100);
-
-if (sender === 'user' || sender === 'ai') {
-floatChatHistory.push({ text, sender, model, timestamp: new Date().toISOString() });
-if (!isPrivateMode) {
-localStorage.setItem('mysword_float_chat_history', JSON.stringify(floatChatHistory));
-}
-}
-}
-
-function loadFloatChatHistory() {
-const container = document.getElementById('float-chat-container');
-container.innerHTML = '';
-if (floatChatHistory.length === 0) {
-addFloatMessage('✨ Olá! Sou o MySword AI, seu assistente teológico assembleiano. Escolha sua IA preferida acima e faça sua pergunta!', 'ai');
-} else {
-floatChatHistory.forEach(msg => addFloatMessage(msg.text, msg.sender, msg.model || 'gemini'));
-}
+// Função para copiar notas
+function copiarNotas() {
+    const areaNotas = document.getElementById('area-notas');
+    if (!areaNotas || !areaNotas.value.trim()) {
+        alert("Não há nada para copiar!");
+        return;
+    }
+    
+    navigator.clipboard.writeText(areaNotas.value)
+        .then(() => {
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '✅ Copiado!';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 2000);
+        })
+        .catch(err => {
+            console.error('Erro ao copiar:', err);
+            alert('Erro ao copiar. Tente manualmente (Ctrl+C).');
+        });
 }
 
-function selectFloatPrompt(promptType) {
-document.querySelectorAll('.float-quick-btn').forEach(btn => btn.classList.remove('selected'));
-event.currentTarget.classList.add('selected');
-selectedPrompt = promptType;
-const indicator = document.getElementById('prompt-indicator');
-indicator.textContent = `Modo: ${promptNames[promptType]}`;
-indicator.className = 'prompt-indicator active';
-const inputField = document.getElementById('float-user-input');
-const currentValue = inputField.value.trim();
-if (currentValue && !currentValue.startsWith(prompts[promptType]) && currentValue.length < 50) {
-inputField.value = prompts[promptType] + currentValue;
-}
-inputField.focus();
+// FUNÇÃO PUBLICAR TELEGRAPH COM MELHOR TRATAMENTO DE ERRO
+async function publicarTelegraph() {
+    const conteudo = document.getElementById('area-notas').value;
+    
+    if (!conteudo.trim()) {
+        alert("O conteúdo está vazio. Escreva algo antes de publicar!");
+        return;
+    }
+
+    const btn = event.target;
+    const iconOriginal = btn.innerHTML;
+    btn.innerHTML = '<span>⏳</span> Publicando...';
+    btn.disabled = true;
+
+    try {
+        console.log('🔧 ========== INÍCIO PUBLICAÇÃO TELEGRAPH ==========');
+        console.log('1. Formatando conteúdo para Telegraph...');
+        
+        // Remova o markdown e envie texto puro para simplificar
+        // Primeiro, converta apenas quebras de linha em parágrafos
+        const paragraphs = conteudo.split('\n').filter(p => p.trim() !== "");
+        console.log(`2. Criado ${paragraphs.length} parágrafos do texto.`);
+        
+        // PASSO 1: Criar conta anônima
+        console.log('3. Criando conta anônima no Telegraph...');
+        const accountResponse = await fetch('https://api.telegra.ph/createAccount?short_name=MySword&author_name=AssistenteTeologico');
+        
+        console.log('4. Resposta da criação de conta recebida:', accountResponse.status);
+        
+        if (!accountResponse.ok) {
+            const errorText = await accountResponse.text();
+            console.error('Erro na resposta da conta:', errorText);
+            throw new Error(`HTTP ${accountResponse.status} ao criar conta: ${errorText.substring(0, 100)}`);
+        }
+        
+        const accountData = await accountResponse.json();
+        console.log('5. Dados da conta recebidos:', accountData.ok ? '✅ OK' : '❌ ERRO');
+        
+        if (!accountData.ok) {
+            throw new Error(`API Telegraph: ${accountData.error || 'Erro desconhecido ao criar conta'}`);
+        }
+        
+        const accessToken = accountData.result.access_token;
+        console.log('6. Token de acesso obtido (primeiros 10 chars):', accessToken.substring(0, 10) + '...');
+        
+        // Crie os nós de conteúdo de forma mais simples e segura
+        const contentNodes = paragraphs.map(p => ({
+            tag: 'p',
+            children: [p.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1')]
+        }));
+        
+        console.log('7. Estrutura dos nós a serem enviados:', JSON.stringify(contentNodes).substring(0, 200) + '...');
+        
+        // PASSO 2: Criar a página
+        console.log('8. Enviando requisição para criar página...');
+        const pageResponse = await fetch(`https://api.telegra.ph/createPage`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                access_token: accessToken,
+                title: "Estudo Teológico - MySword",
+                author_name: "Assistente Teológico",
+                content: contentNodes,
+                return_content: false // Mude para false para simplificar
+            })
+        });
+        
+        console.log('9. Resposta da criação de página recebida:', pageResponse.status);
+        
+        const responseText = await pageResponse.text();
+        console.log('10. Texto bruto da resposta:', responseText.substring(0, 300));
+        
+        if (!pageResponse.ok) {
+            console.error('Resposta de erro completa:', responseText);
+            throw new Error(`HTTP ${pageResponse.status}: ${responseText.substring(0, 150)}`);
+        }
+        
+        const pageData = JSON.parse(responseText);
+        console.log('11. Dados da página analisados:', pageData.ok ? '✅ OK' : '❌ ERRO');
+        
+        if (pageData.ok) {
+            const urlFinal = pageData.result.url;
+            console.log('✅ Publicação bem-sucedida! URL:', urlFinal);
+            
+            // Mostrar resultado
+            const chatContent = document.getElementById('chat-content');
+            const resultHTML = `
+                <div style="padding: 20px; background: rgba(0, 136, 204, 0.1); border-radius: 10px; margin-top: 15px; border: 1px solid #0088cc;">
+                    <h4 style="color: #0088cc; margin-top: 0;">✅ Publicado com Sucesso!</h4>
+                    <p style="color: #fff; margin: 10px 0;">Sua página foi publicada no Telegraph.</p>
+                    <div style="display: flex; align-items: center; gap: 10px; margin: 15px 0;">
+                        <input type="text" id="telegraph-url" value="${urlFinal}" readonly 
+                               style="flex: 1; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid #444; border-radius: 6px; color: #fff; font-size: 14px;">
+                        <button onclick="copiarTelegraphUrl()" style="padding: 10px 15px; background: #30d158; color: white; border: none; border-radius: 6px; cursor: pointer;">📋</button>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="window.open('${urlFinal}', '_blank')" style="flex: 1; padding: 12px; background: #0088cc; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                            🔗 Abrir Página
+                        </button>
+                        <button onclick="shareTelegraph('${urlFinal}')" style="flex: 1; padding: 12px; background: #5856d6; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                            📤 Compartilhar
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Inserir resultado após o textarea
+            const textarea = document.getElementById('area-notas');
+            const buttonsDiv = textarea.nextElementSibling;
+            buttonsDiv.insertAdjacentHTML('afterend', resultHTML);
+            
+        } else {
+            throw new Error(`API Telegraph: ${pageData.error || 'Erro desconhecido ao criar página'}`);
+        }
+
+    } catch (error) {
+        console.error("❌ ERRO DETALHADO na API do Telegraph:", error);
+        console.error("Stack trace:", error.stack);
+        
+        // Mostrar erro mais informativo para o usuário
+        let mensagemErro = `Erro ao publicar: ${error.message}`;
+        
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+            mensagemErro += '\n\n🔍 Possível problema de conexão. Verifique sua internet ou se o site telegra.ph está acessível.';
+        } else if (error.message.includes('429')) {
+            mensagemErro += '\n\n⚠️ Muitas requisições. O Telegraph pode ter limitado requisições temporariamente. Tente novamente em alguns minutos.';
+        } else if (error.message.includes('500') || error.message.includes('502')) {
+            mensagemErro += '\n\n⚙️ Problema no servidor do Telegraph. O serviço pode estar instável no momento.';
+        } else if (error.message.includes('CORS')) {
+            mensagemErro += '\n\n🛡️ Problema de CORS. Tente usar uma extensão para desabilitar CORS ou teste em outro navegador.';
+        }
+        
+        alert(mensagemErro);
+        
+        // Também mostrar erro na interface
+        const chatContent = document.getElementById('chat-content');
+        const errorHTML = `
+            <div style="padding: 15px; background: rgba(255, 69, 58, 0.1); border-radius: 10px; margin-top: 15px; border: 1px solid #ff453a;">
+                <h4 style="color: #ff453a; margin-top: 0;">❌ Falha na Publicação</h4>
+                <p style="color: #fff; margin: 10px 0; font-size: 14px;">${error.message.replace(/\n/g, '<br>')}</p>
+                <p style="color: #ff9c7c; font-size: 12px; margin: 5px 0;">
+                    🔍 Abra o Console do navegador (F12 → Console) para ver detalhes técnicos.<br>
+                    💡 Dica: Tente usar um texto mais curto e simples para teste.
+                </p>
+                <button onclick="testarConexaoTelegraph()" style="margin-top: 10px; padding: 8px 12px; background: #ff6b35; color: white; border: none; border-radius: 6px; font-size: 12px; cursor: pointer;">
+                    🧪 Testar Conexão com Telegraph
+                </button>
+            </div>
+        `;
+        
+        const textarea = document.getElementById('area-notas');
+        const buttonsDiv = textarea.nextElementSibling;
+        buttonsDiv.insertAdjacentHTML('afterend', errorHTML);
+        
+    } finally {
+        btn.innerHTML = iconOriginal;
+        btn.disabled = false;
+        console.log('🔧 ========== FIM PUBLICAÇÃO TELEGRAPH ==========');
+    }
 }
 
-function setActiveModel(model) {
-activeModel = model;
-updateModelButtons();
-if (!isPrivateMode) {
-localStorage.setItem('mysword_active_model', model);
-}
-if (!apiKeys[model] && model !== 'gemini') {
-addFloatMessage(`⚠️ Nenhuma chave ${model.toUpperCase()} configurada. Clique em 🔑 para adicionar.`, 'ai');
-}
+// Função para testar conexão com Telegraph
+async function testarConexaoTelegraph() {
+    console.log('🧪 Testando conexão com Telegraph API...');
+    
+    try {
+        const testResponse = await fetch('https://api.telegra.ph/createAccount?short_name=TesteConexao');
+        console.log('Status da resposta:', testResponse.status);
+        console.log('Headers:', [...testResponse.headers.entries()]);
+        
+        const testText = await testResponse.text();
+        console.log('Resposta bruta:', testText.substring(0, 200));
+        
+        if (testResponse.ok) {
+            alert('✅ Conexão com Telegraph OK! O problema pode estar no conteúdo ou no formato dos dados.');
+        } else {
+            alert(`❌ Problema de conexão: HTTP ${testResponse.status}. O Telegraph pode estar indisponível.`);
+        }
+    } catch (error) {
+        console.error('Erro no teste de conexão:', error);
+        alert('❌ Não foi possível conectar ao Telegraph. Verifique sua conexão com a internet.');
+    }
 }
 
-function updateModelButtons() {
-document.querySelectorAll('.model-btn').forEach(btn => btn.classList.remove('active'));
-document.querySelector(`.${activeModel}-btn`).classList.add('active');
+// Função para copiar URL do Telegraph
+function copiarTelegraphUrl() {
+    const urlInput = document.getElementById('telegraph-url');
+    if (!urlInput) return;
+    
+    urlInput.select();
+    urlInput.setSelectionRange(0, 99999); // Para mobile
+    
+    navigator.clipboard.writeText(urlInput.value)
+        .then(() => {
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '✅';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 2000);
+        })
+        .catch(err => {
+            alert('Erro ao copiar. Tente manualmente (Ctrl+C).');
+        });
 }
 
-// API KEYS - MODAL
+// Função para compartilhar via Web Share API
+function shareTelegraph(url) {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Estudo Teológico - MySword',
+            text: 'Confira este estudo teológico publicado via Telegraph',
+            url: url
+        })
+        .catch(error => console.log('Erro ao compartilhar:', error));
+    } else {
+        // Fallback para copiar URL
+        navigator.clipboard.writeText(url)
+            .then(() => {
+                alert('URL copiada para a área de transferência!');
+            })
+            .catch(err => {
+                prompt('Copie a URL:', url);
+            });
+    }
+}
+
+// ============================================================================
+// FUNÇÕES DO CHAT COM FALLBACK
+// ============================================================================
+function limparTela() {
+    document.getElementById("chat-content").innerHTML = "";
+    document.getElementById("janela-chat").style.display = "flex";
+}
+
+function addMsg(e, t, model = null) {
+    var n = document.createElement("div");
+    n.className = "msg msg-" + t;
+    
+    if (t === "ai") {
+        let modelBadge = '';
+        if (model) {
+            const config = aiConfig[model] || { name: model.toUpperCase(), color: '#8e8e93' };
+            modelBadge = `<span class="badge" style="background: ${config.color}; margin-left: 8px;">${config.name}</span>`;
+        }
+        
+        n.innerHTML = `<div style="color: #aaa; font-size: 12px; margin-bottom: 5px;">⚔️ MySword AI ${modelBadge}</div>` + 
+                      e.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>").replace(/\n/g, "<br>");
+    } else {
+        n.innerText = e;
+    }
+    
+    var o = document.getElementById("chat-content");
+    o.appendChild(n);
+    o.scrollTop = o.scrollHeight;
+    
+    // Adicionar botão de cópia para mensagens da IA
+    if (t === "ai") {
+        var copyBtn = document.createElement("button");
+        copyBtn.className = "btn-copy";
+        copyBtn.innerText = "📋 COPIAR";
+        copyBtn.onclick = function() {
+            var textArea = document.createElement("textarea");
+            textArea.value = e;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textArea);
+            copyBtn.innerText = "✅ COPIADO!";
+            setTimeout(() => { copyBtn.innerText = "📋 COPIAR"; }, 2000);
+        };
+        n.appendChild(copyBtn);
+    }
+    
+    return n;
+}
+
+// ============================================================================
+// SISTEMA DE FALLBACK AUTOMÁTICO
+// ============================================================================
+function updateApiQuotaStatus(provider, status, error = null) {
+    if (error) {
+        // Verificar se é erro de cota (429)
+        if (error.includes('429') || error.includes('quota') || error.includes('QUOTA')) {
+            apiQuotaStatus[provider].available = false;
+            apiQuotaStatus[provider].lastError = error;
+            apiQuotaStatus[provider].retryAfter = Date.now() + 3600000; // 1 hora
+            console.warn(`API ${provider} marcada como indisponível (cota excedida)`);
+        }
+    } else {
+        apiQuotaStatus[provider].available = status;
+        if (status) {
+            apiQuotaStatus[provider].lastError = null;
+            apiQuotaStatus[provider].retryAfter = null;
+        }
+    }
+    
+    // Salvar status no localStorage
+    localStorage.setItem('mysword_api_quota_status', JSON.stringify(apiQuotaStatus));
+    
+    // Atualizar display
+    updateAIStatusDisplay();
+    updateAISelector();
+}
+
+// ============================================================================
+// FUNÇÕES DA API - COM SISTEMA DE FALLBACK
+// ============================================================================
+async function enviar() {
+    const input = document.getElementById('prompt-input');
+    const userText = input.value.trim();
+    
+    if (!userText) {
+        alert("Digite uma pergunta!");
+        return;
+    }
+    
+    // Usar a IA selecionada
+    const modelToUse = activeModel;
+    
+    // Verificar se há chave configurada
+    if (!apiKeys[modelToUse]) {
+        addMsg(`⚠️ ${aiConfig[modelToUse].name} não está configurado. Configure a chave primeiro.`, "ai");
+        showApiModal();
+        selectApiProvider(modelToUse);
+        return;
+    }
+    
+    // Verificar se a IA está disponível
+    if (!apiQuotaStatus[modelToUse].available) {
+        // Tentar próxima IA automaticamente
+        const nextAI = getNextAvailableAI(modelToUse);
+        if (nextAI && nextAI !== modelToUse) {
+            if (confirm(`${aiConfig[modelToUse].name} pode estar indisponível. Usar ${aiConfig[nextAI].name} em vez disso?`)) {
+                selectAI(nextAI);
+                // Aguardar um momento para a mudança
+                setTimeout(() => enviar(), 300);
+                return;
+            }
+        }
+    }
+    
+    // Mostrar janela de chat
+    document.getElementById("janela-chat").style.display = "flex";
+    
+    // Adicionar mensagem do usuário
+    addMsg(userText, "user");
+    input.value = "";
+    
+    // Adicionar mensagem de loading
+    const loadingDiv = document.createElement("div");
+    loadingDiv.className = "msg msg-ai";
+    loadingDiv.innerHTML = `<div style="color: #aaa;">Pesquisando nas fontes assembleianas (usando ${aiConfig[modelToUse].name})...</div><div class="loading-ios"><span></span><span></span><span></span></div>`;
+    document.getElementById("chat-content").appendChild(loadingDiv);
+    
+    try {
+        let responseText = '';
+        
+        // Construir prompt completo
+        let fullPrompt = defaultProfile;
+        
+        // Adicionar diretrizes do modo se selecionado
+        if (modoAtual && modeGuidelines[modoAtual]) {
+            fullPrompt += "\n\n" + modeGuidelines[modoAtual];
+        }
+        
+        // Adicionar pergunta do usuário
+        fullPrompt += "\n\nPERGUNTA DO USUÁRIO: " + userText + "\n\nRESPONDA:";
+        
+        // Chamar API apropriada
+        if (modelToUse === 'gemini') {
+            responseText = await callGeminiAPI(fullPrompt);
+        } else if (modelToUse === 'mistral') {
+            responseText = await callMistralAPI(fullPrompt);
+        } else if (modelToUse === 'deepseek') {
+            responseText = await callDeepSeekAPI(fullPrompt);
+        } else if (modelToUse === 'groq') {
+            responseText = await callGroqAPI(fullPrompt);
+        }
+        
+        // Remover loading e adicionar resposta
+        loadingDiv.remove();
+        addMsg(responseText, "ai", modelToUse);
+        
+        // Marcar API como funcionando
+        updateApiQuotaStatus(modelToUse, true);
+        
+        // Salvar no histórico
+        chatHistory.push({
+            user: userText,
+            ai: responseText,
+            model: modelToUse,
+            mode: modoAtual,
+            timestamp: new Date().toISOString()
+        });
+        
+        localStorage.setItem('mysword_chat_history', JSON.stringify(chatHistory));
+        
+    } catch (error) {
+        loadingDiv.remove();
+        
+        // Verificar se é erro de cota
+        if (error.message.includes('429') || error.message.includes('quota') || error.message.includes('QUOTA')) {
+            // Marcar API como indisponível
+            updateApiQuotaStatus(modelToUse, false, error.message);
+            
+            // Tentar próxima API automaticamente
+            const nextAI = getNextAvailableAI(modelToUse);
+            if (nextAI && nextAI !== modelToUse) {
+                addMsg(`⚠️ ${aiConfig[modelToUse].name} sem cota. Tentando ${aiConfig[nextAI].name} automaticamente...`, "ai");
+                
+                // Tentar novamente com próxima IA
+                setTimeout(async () => {
+                    try {
+                        let retryResponse = '';
+                        const retryPrompt = fullPrompt;
+                        
+                        if (nextAI === 'gemini') {
+                            retryResponse = await callGeminiAPI(retryPrompt);
+                        } else if (nextAI === 'mistral') {
+                            retryResponse = await callMistralAPI(retryPrompt);
+                        } else if (nextAI === 'deepseek') {
+                            retryResponse = await callDeepSeekAPI(retryPrompt);
+                        } else if (nextAI === 'groq') {
+                            retryResponse = await callGroqAPI(retryPrompt);
+                        }
+                        
+                        addMsg(retryResponse, "ai", nextAI);
+                        updateApiQuotaStatus(nextAI, true);
+                        
+                        // Atualizar histórico
+                        chatHistory.push({
+                            user: userText,
+                            ai: retryResponse,
+                            model: nextAI,
+                            mode: modoAtual,
+                            timestamp: new Date().toISOString()
+                        });
+                        
+                        localStorage.setItem('mysword_chat_history', JSON.stringify(chatHistory));
+                    } catch (retryError) {
+                        addMsg(`❌ Erro também em ${aiConfig[nextAI].name}: ${retryError.message}`, "ai");
+                    }
+                }, 1000);
+            } else {
+                addMsg(`❌ ${aiConfig[modelToUse].name} sem cota e nenhuma IA alternativa disponível. Configure outra IA.`, "ai");
+            }
+        } else {
+            addMsg(`❌ Erro em ${aiConfig[modelToUse].name}: ${error.message}`, "ai");
+        }
+        
+        console.error("Erro na API:", error);
+    }
+}
+
+async function callGeminiAPI(prompt) {
+    // Usar modelo descoberto ou padrão
+    const modelName = discoveredModels.gemini || defaultModels.gemini;
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKeys.gemini}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    temperature: 0.7,
+                    maxOutputTokens: 8192
+                }
+            })
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            if (response.status === 429) {
+                throw new Error('Cota gratuita do Gemini excedida (20 req/dia).');
+            }
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
+        }
+        
+        const data = await response.json();
+        return data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sem resposta da API';
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function callMistralAPI(prompt) {
+    // Usar modelo descoberto ou padrão
+    const modelName = discoveredModels.mistral || defaultModels.mistral;
+    try {
+        const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKeys.mistral}`
+            },
+            body: JSON.stringify({
+                model: modelName,
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 0.7,
+                max_tokens: 8000
+            })
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            if (response.status === 429) {
+                throw new Error('Limite de requisições do Mistral atingido (20 req/min).');
+            }
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
+        }
+        
+        const data = await response.json();
+        return data.choices?.[0]?.message?.content || 'Sem resposta da API';
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function callDeepSeekAPI(prompt) {
+    // Usar modelo descoberto ou padrão
+    const modelName = discoveredModels.deepseek || defaultModels.deepseek;
+    try {
+        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKeys.deepseek}`
+            },
+            body: JSON.stringify({
+                model: modelName,
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 0.7,
+                max_tokens: 8000
+            })
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            if (response.status === 429) {
+                throw new Error('Limite temporário do DeepSeek atingido.');
+            }
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
+        }
+        
+        const data = await response.json();
+        return data.choices?.[0]?.message?.content || 'Sem resposta da API';
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function callGroqAPI(prompt) {
+    // Usar modelo descoberto ou padrão
+    const modelName = discoveredModels.groq || defaultModels.groq;
+    try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKeys.groq}`
+            },
+            body: JSON.stringify({
+                model: modelName,
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 0.7,
+                max_tokens: 8000
+            })
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            if (response.status === 429) {
+                throw new Error('Cota do Groq excedida (~500 req/dia).');
+            }
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
+        }
+        
+        const data = await response.json();
+        return data.choices?.[0]?.message?.content || 'Sem resposta da API';
+    } catch (error) {
+        throw error;
+    }
+}
+
+// ============================================================================
+// VERIFICAÇÃO DE STATUS DAS APIS
+// ============================================================================
+async function checkAllApiStatus() {
+    const resultsContainer = document.getElementById('auto-config-results-ios');
+    if (!resultsContainer) return;
+    
+    let html = '<div style="color: #aaa; font-size: 13px; text-align: center;">Verificando status das APIs...</div>';
+    resultsContainer.innerHTML = html;
+    
+    const results = {};
+    
+    // Testar apenas APIs com chaves configuradas
+    if (apiKeys.gemini) {
+        results.gemini = await testApiStatus('gemini');
+    }
+    if (apiKeys.mistral) {
+        results.mistral = await testApiStatus('mistral');
+    }
+    if (apiKeys.deepseek) {
+        results.deepseek = await testApiStatus('deepseek');
+    }
+    if (apiKeys.groq) {
+        results.groq = await testApiStatus('groq');
+    }
+    
+    updateApiStatusDisplay(results);
+}
+
+async function testApiStatus(provider) {
+    try {
+        if (provider === 'gemini') {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKeys.gemini}`);
+            if (!response.ok) {
+                return { isValid: false, status: response.status };
+            }
+            return { isValid: true, status: 200 };
+        } else if (provider === 'mistral') {
+            const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKeys.mistral}`
+                },
+                body: JSON.stringify({
+                    model: 'mistral-small-latest',
+                    messages: [{ role: 'user', content: 'ping' }],
+                    max_tokens: 1
+                })
+            });
+            return { isValid: response.ok, status: response.status };
+        } else if (provider === 'deepseek') {
+            const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKeys.deepseek}`
+                },
+                body: JSON.stringify({
+                    model: 'deepseek-chat',
+                    messages: [{ role: 'user', content: 'ping' }],
+                    max_tokens: 1
+                })
+            });
+            return { isValid: response.ok, status: response.status };
+        } else if (provider === 'groq') {
+            const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKeys.groq}`
+                },
+                body: JSON.stringify({
+                    model: 'llama-3.1-8b-instant',
+                    messages: [{ role: 'user', content: 'ping' }],
+                    max_tokens: 1
+                })
+            });
+            return { isValid: response.ok, status: response.status };
+        }
+    } catch (error) {
+        return { isValid: false, status: error.message };
+    }
+}
+
+function updateApiStatusDisplay(results) {
+    const container = document.getElementById('auto-config-results-ios');
+    if (!container) return;
+    
+    let html = '';
+    let availableCount = 0;
+    
+    Object.keys(results).forEach(provider => {
+        const result = results[provider];
+        if (result.isValid) {
+            availableCount++;
+            html += `<div style="margin: 8px 0; padding: 8px; background: #238636; border-radius: 6px; color: white;">
+                <strong>${provider.toUpperCase()}:</strong> ✅ Disponível
+            </div>`;
+            updateApiQuotaStatus(provider, true);
+        } else {
+            html += `<div style="margin: 8px 0; padding: 8px; background: #da3633; border-radius: 6px; color: white;">
+                <strong>${provider.toUpperCase()}:</strong> ❌ Erro (Status: ${result.status})
+            </div>`;
+            updateApiQuotaStatus(provider, false, `Status: ${result.status}`);
+        }
+    });
+    
+    if (Object.keys(results).length === 0) {
+        html = '<div style="color: #aaa; text-align: center;">⚠️ Nenhuma chave configurada para testar</div>';
+    } else {
+        html += `<div style="margin-top: 15px; padding: 10px; background: ${availableCount > 0 ? '#1a5fff' : '#da3633'}; border-radius: 8px; color: white; text-align: center;">
+            ${availableCount} de ${Object.keys(results).length} APIs disponíveis
+        </div>`;
+    }
+    
+    container.innerHTML = html;
+    
+    // Atualizar status das IAs
+    updateAIStatusDisplay();
+}
+
+// ============================================================================
+// FUNÇÕES DO MODAL DE API
+// ============================================================================
 function showApiModal() {
-document.getElementById('api-modal').style.display = 'flex';
-updateSavedKeysDisplay();
-document.getElementById('gemini-key').value = apiKeys.gemini || '';
-document.getElementById('mistral-key').value = apiKeys.mistral || '';
-document.getElementById('deepseek-key').value = apiKeys.deepseek || '';
-document.getElementById('groq-key').value = apiKeys.groq || '';
-document.getElementById('api-modal').onclick = function(e) {
-if (e.target === this) hideApiModal();
-};
+    document.getElementById('api-modal-ios').style.display = 'flex';
+    updateSavedKeysDisplay();
+    
+    // Preencher campos com chaves salvas
+    document.getElementById('gemini-key-ios').value = apiKeys.gemini || '';
+    document.getElementById('mistral-key-ios').value = apiKeys.mistral || '';
+    document.getElementById('deepseek-key-ios').value = apiKeys.deepseek || '';
+    document.getElementById('groq-key-ios').value = apiKeys.groq || '';
+    
+    // Verificar status automaticamente
+    setTimeout(() => checkAllApiStatus(), 500);
 }
 
 function hideApiModal() {
-document.getElementById('api-modal').style.display = 'none';
+    document.getElementById('api-modal-ios').style.display = 'none';
 }
 
 function selectApiProvider(provider) {
-apiProvider = provider;
-document.querySelectorAll('.api-option').forEach(opt => opt.classList.remove('selected'));
-document.querySelector(`.${provider}`).classList.add('selected');
-document.getElementById('gemini-config').style.display = 'none';
-document.getElementById('mistral-config').style.display = 'none';
-document.getElementById('deepseek-config').style.display = 'none';
-document.getElementById('groq-config').style.display = 'none';
-document.getElementById(`${provider}-config`).style.display = 'block';
+    apiProvider = provider;
+    
+    // Atualizar seleção visual
+    document.querySelectorAll('.api-option-ios').forEach(opt => {
+        opt.classList.remove('selected');
+    });
+    document.querySelector(`.${provider}`).classList.add('selected');
+    
+    // Mostrar configuração apropriada
+    document.getElementById('gemini-config-ios').style.display = 'none';
+    document.getElementById('mistral-config-ios').style.display = 'none';
+    document.getElementById('deepseek-config-ios').style.display = 'none';
+    document.getElementById('groq-config-ios').style.display = 'none';
+    
+    document.getElementById(`${provider}-config-ios`).style.display = 'block';
 }
 
 function updateSavedKeysDisplay() {
-const container = document.getElementById('saved-keys-container');
-container.innerHTML = '';
-let hasKeys = false;
-if (apiKeys.gemini) {
-hasKeys = true;
-container.innerHTML += `<div class="key-item"><span><strong>Gemini:</strong> <span class="key-preview">${apiKeys.gemini.substring(0,12)}...</span></span><span class="key-status status-valid">✓ Válida</span></div>`;
-}
-if (apiKeys.mistral) {
-hasKeys = true;
-container.innerHTML += `<div class="key-item"><span><strong>Mistral:</strong> <span class="key-preview">${apiKeys.mistral.substring(0,12)}...</span></span><span class="key-status status-valid">✓ Válida</span></div>`;
-}
-if (apiKeys.deepseek) {
-hasKeys = true;
-container.innerHTML += `<div class="key-item"><span><strong>DeepSeek:</strong> <span class="key-preview">${apiKeys.deepseek.substring(0,12)}...</span></span><span class="key-status status-valid">✓ Válida</span></div>`;
-}
-if (apiKeys.groq) {
-hasKeys = true;
-container.innerHTML += `<div class="key-item"><span><strong>Llama:</strong> <span class="key-preview">${apiKeys.groq.substring(0,12)}...</span></span><span class="key-status status-valid">✓ Válida</span></div>`;
-}
-if (!hasKeys) {
-container.innerHTML = '<div class="key-item"><span>🔑 Nenhuma chave configurada ainda</span></div>';
-}
+    const container = document.getElementById('saved-keys-container-ios');
+    container.innerHTML = '';
+    
+    let hasKeys = false;
+    
+    if (apiKeys.gemini) {
+        hasKeys = true;
+        const modelName = discoveredModels.gemini || 'modelo padrão';
+        const status = apiQuotaStatus.gemini.available ? 'status-valid' : 'status-warning';
+        const statusText = apiQuotaStatus.gemini.available ? '✓ Válida' : '⚠️ Cota Baixa';
+        container.innerHTML += `<div class="key-item-ios">
+            <span><strong>Gemini:</strong> <span style="font-family: monospace;">${apiKeys.gemini.substring(0, 12)}...</span><br>
+            <small style="color: #aaa;">Modelo: ${modelName}</small></span>
+            <span class="key-status ${status}">${statusText}</span>
+        </div>`;
+    }
+    
+    if (apiKeys.mistral) {
+        hasKeys = true;
+        const modelName = discoveredModels.mistral || 'modelo padrão';
+        const status = apiQuotaStatus.mistral.available ? 'status-valid' : 'status-invalid';
+        container.innerHTML += `<div class="key-item-ios">
+            <span><strong>Mistral:</strong> <span style="font-family: monospace;">${apiKeys.mistral.substring(0, 12)}...</span><br>
+            <small style="color: #aaa;">Modelo: ${modelName}</small></span>
+            <span class="key-status ${status}">${apiQuotaStatus.mistral.available ? '✓ Válida' : '❌ Erro'}</span>
+        </div>`;
+    }
+    
+    if (apiKeys.deepseek) {
+        hasKeys = true;
+        const modelName = discoveredModels.deepseek || 'modelo padrão';
+        const status = apiQuotaStatus.deepseek.available ? 'status-valid' : 'status-invalid';
+        container.innerHTML += `<div class="key-item-ios">
+            <span><strong>DeepSeek:</strong> <span style="font-family: monospace;">${apiKeys.deepseek.substring(0, 12)}...</span><br>
+            <small style="color: #aaa;">Modelo: ${modelName}</small></span>
+            <span class="key-status ${status}">${apiQuotaStatus.deepseek.available ? '✓ Válida' : '❌ Erro'}</span>
+        </div>`;
+    }
+    
+    if (apiKeys.groq) {
+        hasKeys = true;
+        const modelName = discoveredModels.groq || 'modelo padrão';
+        const status = apiQuotaStatus.groq.available ? 'status-valid' : 'status-invalid';
+        container.innerHTML += `<div class="key-item-ios">
+            <span><strong>Llama:</strong> <span style="font-family: monospace;">${apiKeys.groq.substring(0, 12)}...</span><br>
+            <small style="color: #aaa;">Modelo: ${modelName}</small></span>
+            <span class="key-status ${status}">${apiQuotaStatus.groq.available ? '✓ Válida' : '❌ Erro'}</span>
+        </div>`;
+    }
+    
+    if (!hasKeys) {
+        container.innerHTML = '<div class="key-item-ios"><span>🔑 Nenhuma chave configurada ainda</span></div>';
+    }
 }
 
 async function testApiKey(provider) {
-const keyInput = document.getElementById(`${provider}-key`);
-const key = keyInput.value.trim();
-if (!key) { alert('⚠️ Insira uma chave primeiro!'); return; }
-let isValid = false;
-let message = '';
-try {
-if (provider === 'gemini') {
-isValid = key.startsWith('AIzaSy');
-message = isValid ? '✅ Chave Gemini válida!' : '❌ Chave inválida. Deve começar com "AIzaSy"';
-} else if (provider === 'mistral') {
-isValid = key.length > 20;
-message = isValid ? '✅ Chave Mistral válida!' : '❌ Formato inválido.';
-} else if (provider === 'deepseek') {
-isValid = key.startsWith('sk-') || key.length > 30;
-message = isValid ? '✅ Chave DeepSeek válida!' : '❌ Formato inválido.';
-} else if (provider === 'groq') {
-isValid = key.startsWith('gsk_') && key.length > 30;
-message = isValid ? '✅ Chave Groq válida!' : '❌ Formato inválido. Deve começar com "gsk_"';
-}
-} catch (e) { message = `❌ Erro ao testar: ${e.message}`; }
-alert(message);
-if (isValid) {
-apiKeys[provider] = key;
-updateSavedKeysDisplay();
-}
-}
-
-function saveAllApiKeys() {
-apiKeys.gemini = document.getElementById('gemini-key').value.trim();
-apiKeys.mistral = document.getElementById('mistral-key').value.trim();
-apiKeys.deepseek = document.getElementById('deepseek-key').value.trim();
-apiKeys.groq = document.getElementById('groq-key').value.trim();
-if (!isPrivateMode) {
-localStorage.setItem('mysword_api_keys', JSON.stringify(apiKeys));
-}
-updateSavedKeysDisplay();
-hideApiModal();
-if (apiKeys.gemini || apiKeys.mistral || apiKeys.deepseek || apiKeys.groq) {
-addFloatMessage('✅ Chaves salvas com sucesso! Escolha sua IA preferida nos botões acima.', 'ai');
-}
+    const keyInput = document.getElementById(`${provider}-key-ios`);
+    const key = keyInput.value.trim();
+    
+    if (!key) {
+        alert('⚠️ Insira uma chave primeiro!');
+        return;
+    }
+    
+    let isValid = false;
+    let message = '';
+    let modelName = '';
+    
+    try {
+        if (provider === 'gemini') {
+            const result = await testAndDiscoverGemini(key);
+            isValid = result.isValid;
+            message = isValid ? `✅ Chave Gemini válida! Modelo: ${result.model}` : `❌ Erro Gemini: ${result.error}`;
+            modelName = result.model;
+        } else if (provider === 'mistral') {
+            const result = await testAndDiscoverMistral(key);
+            isValid = result.isValid;
+            message = isValid ? `✅ Chave Mistral válida! Modelo: ${result.model}` : `❌ Erro Mistral: ${result.error}`;
+            modelName = result.model;
+        } else if (provider === 'deepseek') {
+            const result = await testAndDiscoverDeepSeek(key);
+            isValid = result.isValid;
+            message = isValid ? `✅ Chave DeepSeek válida! Modelo: ${result.model}` : `❌ Erro DeepSeek: ${result.error}`;
+            modelName = result.model;
+        } else if (provider === 'groq') {
+            const result = await testAndDiscoverGroq(key);
+            isValid = result.isValid;
+            message = isValid ? `✅ Chave Groq válida! Modelo: ${result.model}` : `❌ Erro Groq: ${result.error}`;
+            modelName = result.model;
+        }
+    } catch (e) {
+        message = `❌ Erro ao testar: ${e.message}`;
+    }
+    
+    alert(message);
+    
+    if (isValid) {
+        apiKeys[provider] = key;
+        if (modelName) discoveredModels[provider] = modelName;
+        updateApiQuotaStatus(provider, true);
+        updateSavedKeysDisplay();
+        updateAIStatusDisplay();
+        
+        // Se for a primeira chave configurada, selecionar automaticamente
+        if (Object.values(apiKeys).filter(k => k).length === 1) {
+            selectAI(provider);
+        }
+    } else {
+        updateApiQuotaStatus(provider, false, message);
+        updateAIStatusDisplay();
+    }
 }
 
 async function autoConfigAll() {
-const btn = document.querySelector('.modal-btn.btn-primary[onclick="autoConfigAll()"]');
-const originalText = btn.innerHTML;
-btn.innerHTML = '⏳ Testando...';
-btn.disabled = true;
-const resultsContainer = document.getElementById('auto-config-results');
-resultsContainer.innerHTML = '<div class="key-item"><span>⏳ Testando todas as chaves...</span></div>';
-const geminiKey = document.getElementById('gemini-key').value.trim();
-const mistralKey = document.getElementById('mistral-key').value.trim();
-const deepseekKey = document.getElementById('deepseek-key').value.trim();
-const groqKey = document.getElementById('groq-key').value.trim();
-const results = {};
-if (geminiKey) results.gemini = await testAndDiscoverGemini(geminiKey);
-if (mistralKey) results.mistral = await testAndDiscoverMistral(mistralKey);
-if (deepseekKey) results.deepseek = await testAndDiscoverDeepSeek(deepseekKey);
-if (groqKey) results.groq = await testAndDiscoverGroq(groqKey);
-updateAutoConfigResults(results);
-btn.innerHTML = originalText;
-btn.disabled = false;
+    const btn = document.querySelector('.modal-btn-ios.accent');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '⏳ Testando...';
+    btn.disabled = true;
+    
+    const resultsContainer = document.getElementById('auto-config-results-ios');
+    resultsContainer.innerHTML = '<div style="color: #aaa; text-align: center;">⏳ Testando todas as chaves...</div>';
+    
+    const geminiKey = document.getElementById('gemini-key-ios').value.trim();
+    const mistralKey = document.getElementById('mistral-key-ios').value.trim();
+    const deepseekKey = document.getElementById('deepseek-key-ios').value.trim();
+    const groqKey = document.getElementById('groq-key-ios').value.trim();
+    
+    const results = {};
+    
+    // Testar todas as chaves em paralelo
+    const promises = [];
+    
+    if (geminiKey) {
+        promises.push(testAndDiscoverGemini(geminiKey).then(r => { results.gemini = r; }));
+    }
+    
+    if (mistralKey) {
+        promises.push(testAndDiscoverMistral(mistralKey).then(r => { results.mistral = r; }));
+    }
+    
+    if (deepseekKey) {
+        promises.push(testAndDiscoverDeepSeek(deepseekKey).then(r => { results.deepseek = r; }));
+    }
+    
+    if (groqKey) {
+        promises.push(testAndDiscoverGroq(groqKey).then(r => { results.groq = r; }));
+    }
+    
+    // Aguardar todos os testes
+    await Promise.all(promises);
+    
+    updateAutoConfigResults(results);
+    
+    btn.innerHTML = originalText;
+    btn.disabled = false;
 }
 
 async function testAndDiscoverGemini(apiKey) {
-try {
-const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-if (!response.ok) return { isValid: false, error: `HTTP ${response.status}` };
-const data = await response.json();
-if (data.models) {
-const geminiModels = data.models.filter(m => m.name.includes("gemini") && m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"));
-if (geminiModels.length > 0) {
-geminiModels.sort((a, b) => b.name.localeCompare(a.name));
-const chosenModel = geminiModels[0].name.replace("models/", "");
-discoveredModels.gemini = chosenModel;
-return { isValid: true, model: chosenModel };
-}
-}
-return { isValid: false, error: "Nenhum modelo Gemini encontrado." };
-} catch (error) { return { isValid: false, error: error.message }; }
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+        if (!response.ok) {
+            if (response.status === 429) {
+                return { isValid: false, error: "Cota excedida (20 req/dia)" };
+            }
+            return { isValid: false, error: `HTTP ${response.status}` };
+        }
+        
+        const data = await response.json();
+        if (data.models) {
+            // Filtrar modelos Gemini
+            const geminiModels = data.models.filter(m => 
+                m.name.includes("gemini") && 
+                m.supportedGenerationMethods && 
+                m.supportedGenerationMethods.includes("generateContent")
+            );
+            
+            if (geminiModels.length > 0) {
+                // Ordenar pelo nome (mais recente primeiro)
+                geminiModels.sort((a, b) => b.name.localeCompare(a.name));
+                const chosenModel = geminiModels[0].name.replace("models/", "");
+                discoveredModels.gemini = chosenModel;
+                return { isValid: true, model: chosenModel };
+            }
+        }
+        
+        return { isValid: false, error: "Nenhum modelo Gemini encontrado" };
+    } catch (error) {
+        return { isValid: false, error: error.message };
+    }
 }
 
 async function testAndDiscoverMistral(apiKey) {
-try {
-const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
-method: 'POST',
-headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
-body: JSON.stringify({model: 'mistral-small-latest', messages: [{role: 'user', content: 'Test'}], max_tokens: 1})
-});
-if (!response.ok) return { isValid: false, error: `HTTP ${response.status}` };
-discoveredModels.mistral = 'mistral-small-latest';
-return { isValid: true, model: 'mistral-small-latest' };
-} catch (error) { return { isValid: false, error: error.message }; }
+    try {
+        const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: 'mistral-small-latest',
+                messages: [{ role: 'user', content: 'Test' }],
+                max_tokens: 1
+            })
+        });
+        
+        if (!response.ok) {
+            if (response.status === 429) {
+                return { isValid: false, error: "Limite de 20 req/min atingido" };
+            }
+            return { isValid: false, error: `HTTP ${response.status}` };
+        }
+        
+        discoveredModels.mistral = 'mistral-small-latest';
+        return { isValid: true, model: 'mistral-small-latest' };
+    } catch (error) {
+        return { isValid: false, error: error.message };
+    }
 }
 
 async function testAndDiscoverDeepSeek(apiKey) {
-try {
-const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-method: 'POST',
-headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
-body: JSON.stringify({model: 'deepseek-chat', messages: [{role: 'user', content: 'Test'}], max_tokens: 1})
-});
-if (!response.ok) return { isValid: false, error: `HTTP ${response.status}` };
-discoveredModels.deepseek = 'deepseek-chat';
-return { isValid: true, model: 'deepseek-chat' };
-} catch (error) { return { isValid: false, error: error.message }; }
+    try {
+        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: 'deepseek-chat',
+                messages: [{ role: 'user', content: 'Test' }],
+                max_tokens: 1
+            })
+        });
+        
+        if (!response.ok) {
+            if (response.status === 429) {
+                return { isValid: false, error: "Limite temporário atingido" };
+            }
+            return { isValid: false, error: `HTTP ${response.status}` };
+        }
+        
+        discoveredModels.deepseek = 'deepseek-chat';
+        return { isValid: true, model: 'deepseek-chat' };
+    } catch (error) {
+        return { isValid: false, error: error.message };
+    }
 }
 
 async function testAndDiscoverGroq(apiKey) {
-try {
-const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-method: 'POST',
-headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`},
-body: JSON.stringify({model: 'llama-3.1-8b-instant', messages: [{role: 'user', content: 'Test'}], max_tokens: 1})
-});
-if (!response.ok) return { isValid: false, error: `HTTP ${response.status}` };
-discoveredModels.groq = 'llama-3.1-8b-instant';
-return { isValid: true, model: 'llama-3.1-8b-instant' };
-} catch (error) { return { isValid: false, error: error.message }; }
+    try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: 'llama-3.1-8b-instant',
+                messages: [{ role: 'user', content: 'Test' }],
+                max_tokens: 1
+            })
+        });
+        
+        if (!response.ok) {
+            if (response.status === 429) {
+                return { isValid: false, error: "Cota de ~500 req/dia excedida" };
+            }
+            return { isValid: false, error: `HTTP ${response.status}` };
+        }
+        
+        discoveredModels.groq = 'llama-3.1-8b-instant';
+        return { isValid: true, model: 'llama-3.1-8b-instant' };
+    } catch (error) {
+        return { isValid: false, error: error.message };
+    }
 }
 
 function updateAutoConfigResults(results) {
-const container = document.getElementById('auto-config-results');
-if (!container) return;
-let html = '';
-for (const [provider, result] of Object.entries(results)) {
-html += result.isValid ? `<div class="key-item"><span><strong>${provider.toUpperCase()}:</strong> ✅ Válida | Modelo: ${result.model}</span></div>` : `<div class="key-item"><span><strong>${provider.toUpperCase()}:</strong> ❌ Erro: ${result.error}</span></div>`;
+    const container = document.getElementById('auto-config-results-ios');
+    if (!container) return;
+    
+    let html = '';
+    let validCount = 0;
+    
+    // Verificar cada provedor
+    const providers = ['gemini', 'mistral', 'deepseek', 'groq'];
+    
+    providers.forEach(provider => {
+        if (results[provider]) {
+            const result = results[provider];
+            if (result.isValid) {
+                validCount++;
+                // Atualizar status da API
+                updateApiQuotaStatus(provider, true);
+                
+                html += `<div style="margin: 8px 0; padding: 8px; background: #238636; border-radius: 6px; color: white;">
+                    <strong>${provider.toUpperCase()}:</strong> ✅ Válida | Modelo: ${result.model}
+                </div>`;
+            } else {
+                // Atualizar status da API
+                updateApiQuotaStatus(provider, false, result.error);
+                
+                html += `<div style="margin: 8px 0; padding: 8px; background: #da3633; border-radius: 6px; color: white;">
+                    <strong>${provider.toUpperCase()}:</strong> ❌ ${result.error}
+                </div>`;
+            }
+        }
+    });
+    
+    if (Object.keys(results).length === 0) {
+        html = '<div style="color: #aaa; text-align: center;">⚠️ Nenhuma chave para testar</div>';
+    } else if (validCount > 0) {
+        html += `<div style="margin-top: 15px; padding: 10px; background: #1a5fff; border-radius: 8px; color: white; text-align: center;">
+            ✅ ${validCount} de ${Object.keys(results).length} APIs configuradas com sucesso!
+        </div>`;
+        
+        // Recomendar DeepSeek como padrão se estiver disponível
+        if (results.deepseek && results.deepseek.isValid) {
+            html += `<div style="margin-top: 10px; padding: 8px; background: #238636; border-radius: 6px; color: white; text-align: center; font-size: 12px;">
+                🚀 <strong>DeepSeek recomendado como padrão</strong> (sem limites de cota)
+            </div>`;
+            selectAI('deepseek');
+        }
+    }
+    
+    container.innerHTML = html;
+    
+    // Salvar modelos descobertos
+    localStorage.setItem('mysword_discovered_models', JSON.stringify(discoveredModels));
+    
+    // Atualizar display das chaves e status
+    updateSavedKeysDisplay();
+    updateAIStatusDisplay();
 }
-if (Object.keys(results).length === 0) html = '<div class="key-item"><span>⚠️ Nenhuma chave para testar</span></div>';
-container.innerHTML = html;
+
+function saveAllApiKeys() {
+    apiKeys.gemini = document.getElementById('gemini-key-ios').value.trim();
+    apiKeys.mistral = document.getElementById('mistral-key-ios').value.trim();
+    apiKeys.deepseek = document.getElementById('deepseek-key-ios').value.trim();
+    apiKeys.groq = document.getElementById('groq-key-ios').value.trim();
+    
+    localStorage.setItem('mysword_api_keys', JSON.stringify(apiKeys));
+    
+    // Salvar modelos descobertos também
+    localStorage.setItem('mysword_discovered_models', JSON.stringify(discoveredModels));
+    
+    // Verificar status das APIs após salvar
+    setTimeout(() => checkAllApiStatus(), 1000);
+    
+    updateSavedKeysDisplay();
+    updateAIStatusDisplay();
+    hideApiModal();
+    
+    if (apiKeys.gemini || apiKeys.mistral || apiKeys.deepseek || apiKeys.groq) {
+        addMsg('✅ Chaves salvas com sucesso! Seletor de IA ativado.', 'ai');
+    }
 }
 
-async function sendFloatMessage() {
-const input = document.getElementById('float-user-input');
-const userText = input.value.trim();
-if (!userText) return;
-
-if (!apiKeys[activeModel]) {
-addFloatMessage(`⚠️ Nenhuma chave ${activeModel.toUpperCase()} configurada.`, 'ai');
-showApiModal();
-return;
+// ============================================================================
+// BOTÃO PARA OBTER CHAVES GRATUITAS
+// ============================================================================
+function getFreeApiKeys() {
+    const content = `
+    <div style="padding: 20px; text-align: center;">
+        <h3 style="color: var(--accent); margin-bottom: 20px;">🔑 Como Obter Chaves Gratuitas</h3>
+        
+        <div style="text-align: left; margin-bottom: 20px;">
+            <h4 style="color: var(--deepseek);">🧠 DeepSeek (RECOMENDADO)</h4>
+            <p style="font-size: 13px; color: #aaa;">
+                1. Acesse: <a href="https://platform.deepseek.com/api_keys" target="_blank" style="color: #1a5fff;">DeepSeek Platform</a><br>
+                2. Faça login (pode usar Google)<br>
+                3. Clique em "Criar Nova Chave"<br>
+                4. Copie a chave (começa com "sk-")<br>
+                <strong>✅ Vantagem:</strong> Sem limites claros, totalmente gratuito
+            </p>
+        </div>
+        
+        <div style="text-align: left; margin-bottom: 20px;">
+            <h4 style="color: var(--mistral);">🌪️ Mistral AI</h4>
+            <p style="font-size: 13px; color: #aaa;">
+                1. Acesse: <a href="https://console.mistral.ai/api-keys/" target="_blank" style="color: #6c47ff;">Mistral AI Platform</a><br>
+                2. Crie conta gratuita<br>
+                3. Gere sua chave API<br>
+                4. Copie a chave<br>
+                <strong>✅ Vantagem:</strong> 20 requisições por minuto
+            </p>
+        </div>
+        
+        <div style="text-align: left; margin-bottom: 20px;">
+            <h4 style="color: var(--groq);">🦙 Groq (Llama 3)</h4>
+            <p style="font-size: 13px; color: #aaa;">
+                1. Acesse: <a href="https://console.groq.com/keys" target="_blank" style="color: #f55325;">Groq Console</a><br>
+                2. Faça login com Google<br>
+                3. Copie sua chave (começa com "gsk_")<br>
+                <strong>✅ Vantagem:</strong> Muito rápido, ~500 req/dia
+            </p>
+        </div>
+        
+        <div style="text-align: left; margin-bottom: 20px;">
+            <h4 style="color: var(--gemini);">✨ Gemini (Google)</h4>
+            <p style="font-size: 13px; color: #aaa;">
+                1. Acesse: <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #4285F4;">Google AI Studio</a><br>
+                2. Faça login com Google<br>
+                3. Clique em "Create API Key"<br>
+                4. Copie a chave (começa com "AIzaSy")<br>
+                <strong>⚠️ Atenção:</strong> Apenas 20 requisições por dia
+            </p>
+        </div>
+        
+        <button class="modal-btn-ios" onclick="hideApiModal(); showApiModal();" style="margin-top: 20px;">
+            🔑 Voltar para Configuração
+        </button>
+    </div>
+    `;
+    
+    // Abrir em nova janela ou mostrar no modal
+    const modalContent = document.querySelector('.modal-content-ios');
+    modalContent.innerHTML = `
+        <div class="modal-header-ios">
+            <h3>🔑 Como Obter Chaves Gratuitas</h3>
+            <button class="close-btn-ios" onclick="hideApiModal(); showApiModal();">×</button>
+        </div>
+        ${content}
+    `;
 }
 
-addFloatMessage(userText, 'user');
-input.value = '';
-if (selectedPrompt) {
-document.querySelectorAll('.float-quick-btn').forEach(btn => btn.classList.remove('selected'));
-selectedPrompt = '';
-document.getElementById('prompt-indicator').className = 'prompt-indicator';
-}
-
-const container = document.getElementById('float-chat-container');
-const loadingDiv = document.createElement('div');
-loadingDiv.className = 'float-message float-ai-message';
-loadingDiv.innerHTML = '<div class="message-header">⚔️ MySword AI</div><div class="loading"><span></span><span></span><span></span></div>';
-container.appendChild(loadingDiv);
-setTimeout(() => { container.scrollTop = container.scrollHeight; }, 100);
-
-try {
-let responseText = '';
-if (activeModel === 'gemini') responseText = await callGeminiAPI(userText);
-else if (activeModel === 'mistral') responseText = await callMistralAPI(userText);
-else if (activeModel === 'deepseek') responseText = await callDeepSeekAPI(userText);
-else if (activeModel === 'groq') responseText = await callGroqAPI(userText);
-
-container.removeChild(loadingDiv);
-addFloatMessage(responseText, 'ai', activeModel);
-} catch (error) {
-if (container.contains(loadingDiv)) container.removeChild(loadingDiv);
-addFloatMessage(`❌ Erro: ${error.message}`, 'ai', activeModel);
-}
-}
-
-async function callGeminiAPI(userText) {
-let fullPrompt = selectedPrompt ? `${defaultProfile}\n${modeGuidelines[selectedPrompt]}\nPergunta: ${userText}` : `${defaultProfile}\nPergunta: ${userText}`;
-const modelName = discoveredModels.gemini || defaultModels.gemini;
-const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`, {
-method: 'POST',
-headers: {'Content-Type': 'application/json', 'x-goog-api-key': apiKeys.gemini},
-body: JSON.stringify({contents: [{ parts: [{ text: fullPrompt }] }], generationConfig: {temperature: 0.7, maxOutputTokens: 2000}})
+// ============================================================================
+// TOGGLE HEADER COM DOUBLE TAP
+// ============================================================================
+let lastTap = 0;
+document.body.addEventListener('click', function(e) {
+    if (e.target.closest('#header-ai') || e.target.closest('button') || e.target.closest('input') || e.target.closest('#api-modal-ios')) {
+        return;
+    }
+    
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTap;
+    
+    if (tapLength < 500 && tapLength > 0) {
+        e.preventDefault();
+        toggleHeader();
+    }
+    
+    lastTap = currentTime;
 });
-if (!response.ok) throw new Error(`HTTP ${response.status}`);
-const data = await response.json();
-return data.candidates?.[0]?.content?.parts?.[0]?.text || 'Erro na resposta';
+
+function toggleHeader() {
+    var h = document.getElementById('header-ai');
+    var s = document.getElementById('espaco-topo');
+    
+    if (h.style.transform === 'translateY(-100%)') {
+        h.style.transform = 'translateY(0)';
+        s.style.height = '115px';
+    } else {
+        h.style.transform = 'translateY(-100%)';
+        s.style.height = '0px';
+    }
 }
 
-async function callMistralAPI(userText) {
-let fullPrompt = selectedPrompt ? `${defaultProfile}\n${modeGuidelines[selectedPrompt]}\nPergunta: ${userText}` : `${defaultProfile}\nPergunta: ${userText}`;
-const modelName = discoveredModels.mistral || defaultModels.mistral;
-const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
-method: 'POST',
-headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKeys.mistral}`},
-body: JSON.stringify({model: modelName, messages: [{role: 'user', content: fullPrompt}], temperature: 0.7})
-});
-if (!response.ok) throw new Error(`HTTP ${response.status}`);
-const data = await response.json();
-return data.choices?.[0]?.message?.content || 'Erro na resposta';
-}
-
-async function callDeepSeekAPI(userText) {
-let fullPrompt = selectedPrompt ? `${defaultProfile}\n${modeGuidelines[selectedPrompt]}\nPergunta: ${userText}` : `${defaultProfile}\nPergunta: ${userText}`;
-const modelName = discoveredModels.deepseek || defaultModels.deepseek;
-const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-method: 'POST',
-headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKeys.deepseek}`},
-body: JSON.stringify({model: modelName, messages: [{role: 'user', content: fullPrompt}], temperature: 0.7})
-});
-if (!response.ok) throw new Error(`HTTP ${response.status}`);
-const data = await response.json();
-return data.choices?.[0]?.message?.content || 'Erro na resposta';
-}
-
-async function callGroqAPI(userText) {
-let fullPrompt = selectedPrompt ? `${defaultProfile}\n${modeGuidelines[selectedPrompt]}\nPergunta: ${userText}` : `${defaultProfile}\nPergunta: ${userText}`;
-const modelName = discoveredModels.groq || defaultModels.groq;
-const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-method: 'POST',
-headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKeys.groq}`},
-body: JSON.stringify({model: modelName, messages: [{role: 'user', content: fullPrompt}], temperature: 0.7})
-});
-if (!response.ok) throw new Error(`HTTP ${response.status}`);
-const data = await response.json();
-return data.choices?.[0]?.message?.content || 'Erro na resposta';
-}
-
-// SHORTCUTS & THEME
-function toggleTheme() {
-const isLight = document.body.classList.toggle('light-mode');
-if (!isPrivateMode) localStorage.setItem('mysword_theme', isLight ? 'light' : 'dark');
-}
-
-function clearFloatChat() {
-if (confirm('Limpar histórico do chat?')) {
-floatChatHistory = [];
-if (!isPrivateMode) localStorage.removeItem('mysword_float_chat_history');
-loadFloatChatHistory();
-}
-}
-
-document.addEventListener('keydown', function(e) {
-if (e.ctrlKey && e.key === 'Enter') sendFloatMessage();
-if (e.key === 'Escape') if (document.getElementById('api-modal').style.display === 'flex') hideApiModal();
+// ============================================================================
+// FECHAR DROPDOWNS QUANDO CLICAR FORA
+// ============================================================================
+document.addEventListener('click', function(e) {
+    const aiDropdown = document.getElementById('ai-dropdown');
+    const aiSelector = document.getElementById('ai-selector');
+    const modeDropdown = document.getElementById('mode-dropdown');
+    const modeSelector = document.getElementById('mode-selector');
+    
+    if (aiDropdown.classList.contains('show') && 
+        !aiDropdown.contains(e.target) && 
+        !aiSelector.contains(e.target)) {
+        aiDropdown.classList.remove('show');
+    }
+    
+    if (modeDropdown.classList.contains('show') && 
+        !modeDropdown.contains(e.target) && 
+        !modeSelector.contains(e.target)) {
+        modeDropdown.classList.remove('show');
+    }
 });
 </script>
 </body>
